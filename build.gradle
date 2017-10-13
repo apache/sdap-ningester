@@ -1,0 +1,44 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.7.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'gov.nasa.jpl.nexus.ningester'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	maven {
+		url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
+	}
+	mavenLocal()
+}
+
+ext{
+	nexusMessagesVersion = "1.0.0.RELEASE"
+	netcdfJavaVersion = '4.6.9'
+	guavaVersion = "23.2-jre"
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-batch')
+	compile("com.h2database:h2")
+	compile("org.nasa.jpl.nexus:nexus-messages:$nexusMessagesVersion")
+	compile("edu.ucar:cdm:${netcdfJavaVersion}")
+    compile group: 'com.google.guava', name: 'guava'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
