@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NetCDFItemReader implements ItemReader<NexusContent.NexusTile>, ItemStream {
+public class NetCDFItemReaderTest implements ItemReader<NexusContent.NexusTile>, ItemStream {
 
-    private static final Logger log = LoggerFactory.getLogger(NetCDFItemReader.class);
+    private static final Logger log = LoggerFactory.getLogger(NetCDFItemReaderTest.class);
 
     private static final String CURRENT_TILE_SPEC_INDEX_KEY = "current.tile.spec.index";
 
@@ -32,7 +32,7 @@ public class NetCDFItemReader implements ItemReader<NexusContent.NexusTile>, Ite
      * @param fileSlicer Object responsible for slicing the NetCDF file into tiles.
      */
     @Autowired
-    public NetCDFItemReader(FileSlicer fileSlicer){
+    public NetCDFItemReaderTest(FileSlicer fileSlicer){
         this.fileSlicer = fileSlicer;
     }
 

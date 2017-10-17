@@ -11,7 +11,7 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 group = 'gov.nasa.jpl.nexus.ningester'
@@ -30,8 +30,26 @@ ext{
 	nexusMessagesVersion = "1.0.0.RELEASE"
 	netcdfJavaVersion = '4.6.9'
 	guavaVersion = "23.2-jre"
+	jythonVersion = "2.7.1"
 }
 
+sourceSets{
+	main{
+		java{
+			resources{
+				srcDir 'src/python'
+				exclude 'src/python/test'
+			}
+		}
+	}
+	test{
+		java{
+			resources{
+				srcDir 'src/python/test'
+			}
+		}
+	}
+}
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-batch')
@@ -39,7 +57,9 @@ dependencies {
 	compile("org.nasa.jpl.nexus:nexus-messages:$nexusMessagesVersion")
 	compile("edu.ucar:cdm:${netcdfJavaVersion}")
     compile group: 'com.google.guava', name: 'guava'
+	// https://mvnrepository.com/artifact/org.python/jython-standalone
+	compile group: 'org.python', name: 'jython-standalone', version: jythonVersion
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.batch:spring-batch-test')
 }
