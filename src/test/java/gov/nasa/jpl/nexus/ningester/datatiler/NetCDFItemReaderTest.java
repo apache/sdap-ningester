@@ -1,98 +1,47 @@
 package gov.nasa.jpl.nexus.ningester.datatiler;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.batch.item.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import ucar.nc2.dataset.NetcdfDataset;
+import org.junit.Test;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.core.io.ClassPathResource;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
-public class NetCDFItemReaderTest implements ItemReader<NexusContent.NexusTile>, ItemStream {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-    private static final Logger log = LoggerFactory.getLogger(NetCDFItemReaderTest.class);
+public class NetCDFItemReaderTest  {
 
-    private static final String CURRENT_TILE_SPEC_INDEX_KEY = "current.tile.spec.index";
+    @Test
+    public void testOpen() throws IOException {
+        SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
+        slicer.setTilesDesired(5184);
+        slicer.setDimensions(Arrays.asList("lat", "lon"));
 
-    private List<String> tileSpecList;
-    private Integer currentTileSpecIndex;
+        NetCDFItemReader reader = new NetCDFItemReader(slicer);
+        reader.setNetCDFFile(new ClassPathResource("granules/20050101120000-NCEI-L4_GHRSST-SSTblend-AVHRR_OI-GLOB-v02.0-fv02.0.nc").getFile());
 
-    private File netCDFFile;
-    private NetcdfDataset ds;
-    private FileSlicer fileSlicer;
+        ExecutionContext context = new ExecutionContext();
+        reader.open(context);
 
-    /**
-     * Constructor
-     *
-     * @param fileSlicer Object responsible for slicing the NetCDF file into tiles.
-     */
-    @Autowired
-    public NetCDFItemReaderTest(FileSlicer fileSlicer){
-        this.fileSlicer = fileSlicer;
+        assertTrue(context.containsKey(NetCDFItemReader.CURRENT_TILE_SPEC_INDEX_KEY));
     }
 
-    @Autowired
-    public void setNetCDFFile(File netCDFFile) {
-        this.netCDFFile = netCDFFile;
-    }
+    @Test
+    public void testRead() throws Exception {
+        SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
+        slicer.setTilesDesired(5184);
+        slicer.setDimensions(Arrays.asList("lat", "lon"));
 
-    @Override
-    public NexusContent.NexusTile read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+        NetCDFItemReader reader = new NetCDFItemReader(slicer);
+        reader.setNetCDFFile(new ClassPathResource("granules/20050101120000-NCEI-L4_GHRSST-SSTblend-AVHRR_OI-GLOB-v02.0-fv02.0.nc").getFile());
 
-        String currentSpec = this.tileSpecList.get(this.currentTileSpecIndex);
-        currentSpec.split("");
-        this.ds.getVariables().get(0).read(this.tileSpecList.get(this.currentTileSpecIndex++));
+        ExecutionContext context = new ExecutionContext();
+        reader.open(context);
 
-        return null;
-    }
+        String result = reader.read();
 
-    @Override
-    public void open(ExecutionContext executionContext) throws ItemStreamException {
-
-        //Every time we open the file we generate the tile specs according to the given file slicer
-        this.tileSpecList = fileSlicer.generateSlices(this.netCDFFile);
-        log.debug("Generated tile specifications for {}\n{}", this.netCDFFile.getName(),
-                IntStream.range(0, this.tileSpecList.size())
-                        .mapToObj(i -> i + ": " + this.tileSpecList.get(i))
-                        .collect(Collectors.joining("\n")));
-
-        if(executionContext.containsKey(CURRENT_TILE_SPEC_INDEX_KEY)) {
-            //Start at index 0
-            this.currentTileSpecIndex = 0;
-            executionContext.putInt(CURRENT_TILE_SPEC_INDEX_KEY, this.currentTileSpecIndex);
-        }else{
-            //Start at index location from context
-            this.currentTileSpecIndex = executionContext.getInt(CURRENT_TILE_SPEC_INDEX_KEY);
-        }
-
-        //Open the resource
-        try {
-            this.ds = NetcdfDataset.openDataset(netCDFFile.getAbsolutePath());
-        } catch (IOException e) {
-            throw new ItemStreamException(e);
-        }
-
-    }
-
-    @Override
-    public void update(ExecutionContext executionContext) throws ItemStreamException {
-
-        executionContext.putInt(CURRENT_TILE_SPEC_INDEX_KEY, this.currentTileSpecIndex);
-    }
-
-    @Override
-    public void close() throws ItemStreamException {
-
-        try {
-            this.ds.close();
-        } catch (IOException e) {
-            throw new ItemStreamException(e);
-        }
+        assertNotNull(result);
 
     }
 }
