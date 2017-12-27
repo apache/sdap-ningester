@@ -9,7 +9,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import javax.sql.DataSource;
 
 @Configuration
-public class DatasourceConfiguration {
+public class DatasourceConfig {
 
   @Bean
   @Profile("embedded")

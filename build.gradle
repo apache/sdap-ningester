@@ -1,18 +1,24 @@
 buildscript {
 	ext {
-		springBootVersion = '1.5.7.RELEASE'
+		springBootVersion = '1.5.9.RELEASE'
 	}
 	repositories {
 		mavenCentral()
+		maven { url 'http://repo.spring.io/plugins-release' }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
 	}
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-maven'
+apply plugin: 'propdeps-idea'
+apply plugin: 'propdeps-eclipse'
 
 group = 'gov.nasa.jpl.nexus.ningester'
 version = '0.0.1-SNAPSHOT'
@@ -30,7 +36,6 @@ ext{
 	nexusMessagesVersion = "1.0.0.RELEASE"
 	netcdfJavaVersion = '4.6.9'
 	guavaVersion = "23.2-jre"
-	jythonVersion = "2.7.1"
 }
 
 sourceSets{
@@ -52,14 +57,18 @@ sourceSets{
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-batch')
+	optional("org.springframework.boot:spring-boot-configuration-processor")
+
+	compile("org.springframework.boot:spring-boot-starter-batch")
+	compile("org.springframework:spring-web")
+
 	compile("com.h2database:h2")
 	compile("org.nasa.jpl.nexus:nexus-messages:$nexusMessagesVersion")
 	compile("edu.ucar:cdm:${netcdfJavaVersion}")
-    compile group: 'com.google.guava', name: 'guava'
-	// https://mvnrepository.com/artifact/org.python/jython-standalone
-	compile group: 'org.python', name: 'jython-standalone', version: jythonVersion
+    compile("com.google.guava:guava")
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.batch:spring-batch-test')
 }
+
+compileJava.dependsOn(processResources)
