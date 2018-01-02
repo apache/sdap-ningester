@@ -7,6 +7,7 @@ ningester:
       - pythonChainProcessor
     addTimeToSectionSpec:
       timeVar: time
+      timeLen: 1
     ningesterpy:
       base_url: http://127.0.0.1:5000/
     python_chain_properties:
