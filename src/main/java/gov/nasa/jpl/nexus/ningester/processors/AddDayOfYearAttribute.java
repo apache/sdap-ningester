@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class AddDayOfYearAttribute {
 
-    private String regex;
+    private Pattern regex;
 
     /**
      * Reuqires regex that defines EXACTLY one capturing group that contains the day of year when matched with the
@@ -24,7 +24,7 @@ public class AddDayOfYearAttribute {
      */
     @Autowired
     public AddDayOfYearAttribute(String regex) {
-        this.regex = regex;
+        this.regex = Pattern.compile(regex);
     }
 
     /**
@@ -35,11 +35,8 @@ public class AddDayOfYearAttribute {
      */
     public NexusContent.NexusTile setDayOfYearFromGranuleName(NexusContent.NexusTile nexusTile) {
 
-        Pattern thePattern = Pattern.compile(this.regex);
-
-
         String granuleName = nexusTile.getSummary().getGranule();
-        Matcher granuleNameMatcher = thePattern.matcher(granuleName);
+        Matcher granuleNameMatcher = this.regex.matcher(granuleName);
         Boolean granuleNameMatched = granuleNameMatcher.find();
 
         if (!granuleNameMatched) {
