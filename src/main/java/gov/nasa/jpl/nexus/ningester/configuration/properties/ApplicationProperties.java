@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +19,25 @@ public class ApplicationProperties {
     private List<String> tileProcessors = new ArrayList<>();
 
     @NestedConfigurationProperty
+    private final AddDayOfYearAttribute addDayOfYearAttribute = new AddDayOfYearAttribute();
+
+    @NestedConfigurationProperty
+    private final AddTimeFromGranuleName addTimeFromGranuleName = new AddTimeFromGranuleName();
+
+    @NestedConfigurationProperty
     private final AddTimeToSectionSpec addTimeToSectionSpec = new AddTimeToSectionSpec();
 
     @NestedConfigurationProperty
-    private final PythonChainProperties pythonChainProperties = new PythonChainProperties();
+    private final GenerateTileId generateTileId = new GenerateTileId();
 
-    private final Ningesterpy ningesterPy = new Ningesterpy();
+    @NestedConfigurationProperty
+    private final PythonChainProcessor pythonChainProcessor = new PythonChainProcessor();
 
-    public Ningesterpy getNingesterpy() {
-        return ningesterPy;
-    }
+    @NestedConfigurationProperty
+    private final AddDatasetName addDatasetName = new AddDatasetName();
 
-    public PythonChainProperties getPythonChainProperties() {
-        return pythonChainProperties;
+    public PythonChainProcessor getPythonChainProcessor() {
+        return pythonChainProcessor;
     }
 
     public List<String> getTileProcessors() {
@@ -43,18 +48,20 @@ public class ApplicationProperties {
         return addTimeToSectionSpec;
     }
 
+    public AddDayOfYearAttribute getAddDayOfYearAttribute() {
+        return addDayOfYearAttribute;
+    }
 
-    public static class Ningesterpy {
+    public AddTimeFromGranuleName getAddTimeFromGranuleName() {
+        return addTimeFromGranuleName;
+    }
 
-        private URL baseUrl;
+    public GenerateTileId getGenerateTileId() {
+        return generateTileId;
+    }
 
-        public URL getBaseUrl() {
-            return baseUrl;
-        }
-
-        public void setBaseUrl(URL baseUrl) {
-            this.baseUrl = baseUrl;
-        }
+    public AddDatasetName getAddDatasetName() {
+        return addDatasetName;
     }
 
 }

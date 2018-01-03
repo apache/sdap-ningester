@@ -18,7 +18,7 @@ public class GenerateTileId {
         this.salt = salt;
     }
 
-    public NexusContent.NexusTile setTileId(NexusContent.NexusTile inputTile) {
+    public NexusContent.NexusTile addTileId(NexusContent.NexusTile inputTile) {
 
         NexusContent.NexusTile.Builder outTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(inputTile);
         String granuleFileName = inputTile.getSummary().getGranule();

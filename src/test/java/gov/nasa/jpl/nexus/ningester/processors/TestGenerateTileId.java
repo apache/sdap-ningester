@@ -34,7 +34,7 @@ public class TestGenerateTileId {
 
         GenerateTileId processor = new GenerateTileId();
 
-        NexusContent.NexusTile result = processor.setTileId(inputTile);
+        NexusContent.NexusTile result = processor.addTileId(inputTile);
 
         assertThat(result.getSummary().getTileId(), is(expectedId));
         assertThat(result.getTile().getTileId(), is(expectedId));
@@ -63,7 +63,7 @@ public class TestGenerateTileId {
         GenerateTileId processor = new GenerateTileId();
         processor.setSalt(salt);
 
-        NexusContent.NexusTile result = processor.setTileId(inputTile);
+        NexusContent.NexusTile result = processor.addTileId(inputTile);
 
         assertThat(result.getSummary().getTileId(), is(expectedId));
         assertThat(result.getTile().getTileId(), is(expectedId));

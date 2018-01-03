@@ -5,12 +5,15 @@ ningester:
     tile_processors:
       - addTimeToSectionSpec
       - pythonChainProcessor
+      - generateTileId
+      - addDatasetName
     addTimeToSectionSpec:
+      enabled:
       timeVar: time
       timeLen: 1
-    ningesterpy:
+    pythonChainProcessor:
+      enabled:
       base_url: http://127.0.0.1:5000/
-    python_chain_properties:
       uri_path: processorchain
       processor_list:
         -
@@ -23,8 +26,11 @@ ningester:
         -
           name: EmptyTileFilter
         -
-          name: Subtract180Longitude
-        -
           name: KelvinToCelsius
         -
           name: TileSummarizingProcessor
+    generateTileId:
+      enabled:
+    addDatasetName:
+      enabled:
+      datasetName: AVHRR_OI_L4_GHRSST_NCEI

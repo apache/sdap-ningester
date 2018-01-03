@@ -12,7 +12,7 @@ import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class TestSetDatasetName {
+public class TestAddDatasetName {
 
     @Test
     public void testDatasetName() {
@@ -21,7 +21,7 @@ public class TestSetDatasetName {
 
         NexusContent.NexusTile input = NexusContent.NexusTile.newBuilder().build();
 
-        SetDatasetName processor = new SetDatasetName(datasetName);
+        AddDatasetName processor = new AddDatasetName(datasetName);
 
         NexusContent.NexusTile result = processor.addDatasetName(input);
 

@@ -17,6 +17,10 @@ public class AddTimeToSectionSpec {
         this.absolutefilepath = absolutefilepath;
     }
 
+    public void setTimeVar(String timeVar) {
+        this.timeVar = timeVar;
+    }
+
     public String process(String sectionSpec) {
         StringBuilder newSectionSpec = new StringBuilder();
         for (int i = 0; i < this.timeLen; i++) {
@@ -31,12 +35,4 @@ public class AddTimeToSectionSpec {
         return newSectionSpec.toString();
     }
 
-
-    public String getTimeVar() {
-        return timeVar;
-    }
-
-    public void setTimeVar(String timeVar) {
-        this.timeVar = timeVar;
-    }
 }

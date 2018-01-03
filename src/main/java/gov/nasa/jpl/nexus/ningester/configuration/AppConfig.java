@@ -7,14 +7,15 @@ package gov.nasa.jpl.nexus.ningester.configuration;
 
 import gov.nasa.jpl.nexus.ningester.configuration.properties.ApplicationProperties;
 import gov.nasa.jpl.nexus.ningester.http.NexusTileConverter;
-import gov.nasa.jpl.nexus.ningester.processors.AddTimeToSectionSpec;
-import gov.nasa.jpl.nexus.ningester.processors.PythonChainProcessor;
+import gov.nasa.jpl.nexus.ningester.processors.*;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -49,7 +50,7 @@ public class AppConfig {
         RestTemplate template = new RestTemplate();
 
         DefaultUriTemplateHandler uriTemplateHandler = new DefaultUriTemplateHandler();
-        uriTemplateHandler.setBaseUrl(applicationProperties.getNingesterpy().getBaseUrl().toString());
+        uriTemplateHandler.setBaseUrl(applicationProperties.getPythonChainProcessor().getBaseUrl().toString());
         template.setUriTemplateHandler(uriTemplateHandler);
 
         List<HttpMessageConverter<?>> converters = template.getMessageConverters();
@@ -59,22 +60,62 @@ public class AppConfig {
         return template;
     }
 
+    /*
+     * Item Processor beans defined below
+     */
     @Bean
-    @JobScope
-    protected ItemProcessor<String, NexusContent.NexusTile> pythonChainProcessor(RestTemplate restTemplate, Resource granule) throws IOException {
-        PythonChainProcessor processor = new PythonChainProcessor(restTemplate);
-        processor.setGranule(granule);
-        processor.setProcessorList(applicationProperties.getPythonChainProperties().getProcessorList());
-        processor.setUriPath(applicationProperties.getPythonChainProperties().getUriPath());
+    @ConditionalOnProperty(prefix = "ningester.addDatasetName", name = "enabled")
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDatasetName() {
 
-        return processor::sectionSpecProcessor;
+        AddDatasetName processor = new AddDatasetName(applicationProperties.getAddDatasetName().getDatasetName());
+        return processor::addDatasetName;
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "ningester.addDayOfYearAttribute", name = "enabled")
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDayOfYearAttribute() {
+
+        AddDayOfYearAttribute processor = new AddDayOfYearAttribute(applicationProperties.getAddDayOfYearAttribute().getRegex());
+        return processor::setDayOfYearFromGranuleName;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "ningester.addTimeFromGranuleName", name = "enabled")
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addTimeFromGranuleName() {
+
+        AddTimeFromGranuleName processor = new AddTimeFromGranuleName(applicationProperties.getAddTimeFromGranuleName().getRegex(), applicationProperties.getAddTimeFromGranuleName().getDateFormat());
+        return processor::setTimeFromGranuleName;
+    }
+
+    @Bean
+    @JobScope
+    @ConditionalOnProperty(prefix = "ningester.addTimeToSectionSpec", name = "enabled")
     protected ItemProcessor<String, String> addTimeToSectionSpec(Resource granule) throws IOException {
 
         AddTimeToSectionSpec processor = new AddTimeToSectionSpec(applicationProperties.getAddTimeToSectionSpec().getTimeLen(), granule.getFile().getAbsolutePath());
         processor.setTimeVar(applicationProperties.getAddTimeToSectionSpec().getTimeVar());
         return processor::process;
     }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "ningester.generateTileId", name = "enabled")
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> generateTileId() {
+
+        GenerateTileId processor = new GenerateTileId();
+        processor.setSalt(applicationProperties.getGenerateTileId().getSalt());
+        return processor::addTileId;
+    }
+
+    @Bean
+    @JobScope
+    @ConditionalOnProperty(prefix = "ningester.pythonChainProcessor", name = "enabled")
+    protected ItemProcessor<String, NexusContent.NexusTile> pythonChainProcessor(RestTemplate restTemplate, Resource granule) throws IOException {
+        PythonChainProcessor processor = new PythonChainProcessor(restTemplate);
+        processor.setGranule(granule);
+        processor.setProcessorList(applicationProperties.getPythonChainProcessor().getProcessorList());
+        processor.setUriPath(applicationProperties.getPythonChainProcessor().getUriPath());
+
+        return processor::sectionSpecProcessor;
+    }
+
 }

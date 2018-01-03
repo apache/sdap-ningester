@@ -47,7 +47,7 @@ public class PythonChainProcessor {
 
         PythonChainProcessorRequest chainProcessorRequest = new PythonChainProcessorRequest();
         chainProcessorRequest.setProcessorList(processorList);
-        chainProcessorRequest.setInputData("time:0:1," + sectionSpec + ";file://" + granule.getAbsolutePath());
+        chainProcessorRequest.setInputData(sectionSpec);
 
         HttpEntity<PythonChainProcessorRequest> requestEntity = new HttpEntity<>(chainProcessorRequest, headers);
 

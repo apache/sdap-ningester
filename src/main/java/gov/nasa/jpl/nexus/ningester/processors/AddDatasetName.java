@@ -9,11 +9,11 @@ package gov.nasa.jpl.nexus.ningester.processors;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 
-public class SetDatasetName {
+public class AddDatasetName {
 
     String datasetName;
 
-    public SetDatasetName(String datasetName) {
+    public AddDatasetName(String datasetName) {
         this.datasetName = datasetName;
     }
 

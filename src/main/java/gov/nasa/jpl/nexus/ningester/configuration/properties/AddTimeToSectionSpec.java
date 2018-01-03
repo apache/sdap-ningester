@@ -9,10 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties
-@Component
+@Component("addTimeToSectionSpecProperties")
 public class AddTimeToSectionSpec {
 
-    private String timeVar;
+    private String timeVar = "time";
 
     private Integer timeLen;
 

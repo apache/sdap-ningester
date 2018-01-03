@@ -8,12 +8,14 @@ package gov.nasa.jpl.nexus.ningester.configuration.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 @ConfigurationProperties
-@Component
-public class PythonChainProperties {
+@Component("pythonChainProcessorProperties")
+public class PythonChainProcessor {
+    private URL baseUrl;
     private String uriPath;
 
     private List<PythonProcessorModule> processorList = new ArrayList<>();
@@ -28,5 +30,13 @@ public class PythonChainProperties {
 
     public List<PythonProcessorModule> getProcessorList() {
         return processorList;
+    }
+
+    public URL getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(URL baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }
