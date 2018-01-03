@@ -1,6 +1,18 @@
 spring:
     profiles: test
 
+---
+# Tile Slicer Config
+ningester:
+    tile_slicer: sliceFileByTilesDesired
+    sliceFileByTilesDesired:
+      tilesDesired: 5184
+      dimensions:
+        - lat
+        - lon
+
+---
+# Tile processors configuration
 ningester:
     tile_processors:
       - addTimeToSectionSpec
@@ -34,3 +46,16 @@ ningester:
     addDatasetName:
       enabled:
       datasetName: AVHRR_OI_L4_GHRSST_NCEI
+---
+# Tile writer configuration
+ningester:
+  tile_writer:
+    data_store: cassandraStore
+    metadata_store: solrStore
+    cassandraStore:
+      cassandraContactPoints: 127.0.0.1
+      cassandraKeyspace: nexustiles
+      cassandraPort: 9042
+    solrStore:
+      solrUrl: http://127.0.0.1:8983
+      solrCollection: nexustiles
