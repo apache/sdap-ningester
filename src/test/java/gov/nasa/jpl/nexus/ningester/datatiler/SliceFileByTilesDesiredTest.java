@@ -6,12 +6,17 @@
 package gov.nasa.jpl.nexus.ningester.datatiler;
 
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -151,6 +156,24 @@ public class SliceFileByTilesDesiredTest {
         assertEquals(tilesDesired + 72, result.size());
 
         assertThat(result, hasItems("time:0:1,lat:0:249,lon:0:500", "time:0:1,lat:0:249,lon:500:1000", "time:0:1,lat:17928:17999,lon:35500:36000"));
+
+    }
+
+    @Test
+    public void testGenerateSlicesCcmp() throws IOException {
+        Integer tilesDesired = 270;
+        Integer expectedTiles = 289 * 4; // 4 time slices and 289 tiles per time slice
+
+        SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
+        slicer.setTilesDesired(tilesDesired);
+        slicer.setDimensions(Arrays.asList("latitude", "longitude"));
+        slicer.setTimeDimension("time");
+
+        Resource testResource = new ClassPathResource("granules/CCMP_Wind_Analysis_20050101_V02.0_L3.0_RSS.nc");
+
+        List<String> results = slicer.generateSlices(testResource.getFile());
+
+        assertThat(results.size(), is(expectedTiles));
 
     }
 }

@@ -6,18 +6,18 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class NetCDFItemReaderTest  {
+public class NetCDFItemReaderTest {
 
     @Test
-    public void testOpen() throws IOException {
+    public void testOpen() {
         SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
         slicer.setTilesDesired(5184);
         slicer.setDimensions(Arrays.asList("lat", "lon"));
@@ -32,7 +32,7 @@ public class NetCDFItemReaderTest  {
     }
 
     @Test
-    public void testRead() throws Exception {
+    public void testReadOne() throws Exception {
         SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
         slicer.setTilesDesired(5184);
         slicer.setDimensions(Arrays.asList("lat", "lon"));
@@ -52,9 +52,11 @@ public class NetCDFItemReaderTest  {
     }
 
     @Test
-    public void testReadWithTime() throws Exception {
+    public void testReadAll() {
+        Integer tilesDesired = 5184;
+
         SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
-        slicer.setTilesDesired(5184);
+        slicer.setTilesDesired(tilesDesired);
         slicer.setDimensions(Arrays.asList("lat", "lon"));
         slicer.setTimeDimension("time");
 
@@ -65,10 +67,14 @@ public class NetCDFItemReaderTest  {
         ExecutionContext context = new ExecutionContext();
         reader.open(context);
 
-        NexusContent.NexusTile result = reader.read();
+        List<NexusContent.NexusTile> results = new ArrayList<>();
+        NexusContent.NexusTile result;
+        while ((result = reader.read()) != null) {
+            results.add(result);
+        }
 
-        assertThat(result.getSummary().getSectionSpec(), is("time:0:1,lat:0:10,lon:0:20"));
-        assertThat(result.getSummary().getGranule(), is(testResource.getURL().toString()));
+        assertThat(results.size(), is(tilesDesired));
 
     }
+
 }
