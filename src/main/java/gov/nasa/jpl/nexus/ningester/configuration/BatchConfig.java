@@ -1,9 +1,9 @@
 package gov.nasa.jpl.nexus.ningester.configuration;
 
 import gov.nasa.jpl.nexus.ningester.configuration.properties.ApplicationProperties;
-import gov.nasa.jpl.nexus.ningester.datatiler.SliceFileByTilesDesired;
+import gov.nasa.jpl.nexus.ningester.datatiler.FileSlicer;
+import gov.nasa.jpl.nexus.ningester.datatiler.NetCDFItemReader;
 import gov.nasa.jpl.nexus.ningester.processors.CompositeItemProcessor;
-import gov.nasa.jpl.nexus.ningester.processors.PythonChainProcessor;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -13,8 +13,8 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,10 +24,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableBatchProcessing
@@ -59,22 +55,15 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected List<String> tileSpecifications(Resource granule) throws IOException {
-        SliceFileByTilesDesired fileSlicer = new SliceFileByTilesDesired();
-        fileSlicer.setDimensions(Arrays.asList("lat", "lon"));
-        fileSlicer.setTilesDesired(5184);
-        return fileSlicer.generateSlices(granule.getFile());
+    protected ItemStreamReader<NexusContent.NexusTile> reader(FileSlicer fileSlicer, Resource granule) {
+        NetCDFItemReader reader = new NetCDFItemReader(fileSlicer);
+        reader.setResource(granule);
+        return reader;
     }
 
     @Bean
     @JobScope
-    protected ItemReader<String> reader(List<String> tileSpecifications) {
-        return new ListItemReader<>(tileSpecifications);
-    }
-
-    @Bean
-    @JobScope
-    protected ItemProcessor<String, NexusContent.NexusTile> processor() {
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> processor() {
         return new CompositeItemProcessor<>(applicationProperties.getTileProcessors());
     }
 
@@ -90,9 +79,9 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected Step step1(ItemReader<String> reader, ItemProcessor<String, NexusContent.NexusTile> processor, ItemWriter<NexusContent.NexusTile> writer) {
+    protected Step step1(ItemStreamReader<NexusContent.NexusTile> reader, ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> processor, ItemWriter<NexusContent.NexusTile> writer) {
         return steps.get("step1")
-                .<String, NexusContent.NexusTile>chunk(10)
+                .<NexusContent.NexusTile, NexusContent.NexusTile>chunk(10)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer).build();

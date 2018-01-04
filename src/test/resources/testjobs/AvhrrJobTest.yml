@@ -7,6 +7,7 @@ ningester:
     tile_slicer: sliceFileByTilesDesired
     sliceFileByTilesDesired:
       tilesDesired: 5184
+      timeDimension: time
       dimensions:
         - lat
         - lon
@@ -15,14 +16,9 @@ ningester:
 # Tile processors configuration
 ningester:
     tile_processors:
-      - addTimeToSectionSpec
       - pythonChainProcessor
       - generateTileId
       - addDatasetName
-    addTimeToSectionSpec:
-      enabled:
-      timeVar: time
-      timeLen: 1
     pythonChainProcessor:
       enabled:
       base_url: http://127.0.0.1:5000/

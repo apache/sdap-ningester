@@ -12,11 +12,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SliceFileByTilesDesired implements FileSlicer {
 
     private Integer tilesDesired;
     private List<String> dimensions;
+    private String timeDimension;
 
     public void setTilesDesired(Integer desired) {
         this.tilesDesired = desired;
@@ -27,8 +29,9 @@ public class SliceFileByTilesDesired implements FileSlicer {
     }
 
     @Override
-    public List<String> generateSlices(File inputfile) {
+    public List<String> generateSlices(File inputfile) throws IOException {
 
+        Integer timeLen = 0;
         Map<String, Integer> dimensionNameToLength;
         try (NetcdfDataset ds = NetcdfDataset.openDataset(inputfile.getAbsolutePath())) {
 
@@ -36,13 +39,20 @@ public class SliceFileByTilesDesired implements FileSlicer {
             dimensionNameToLength = ds.getDimensions().stream()
                     .filter(dimension -> this.dimensions.contains(dimension.getShortName()))
                     .collect(Collectors.toMap(Dimension::getShortName, Dimension::getLength,
-                            (v1,v2) ->{ throw new RuntimeException(String.format("Duplicate key for values %s and %s", v1, v2));},
+                            (v1, v2) -> {
+                                throw new RuntimeException(String.format("Duplicate key for values %s and %s", v1, v2));
+                            },
                             TreeMap::new));
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading netcdf file", e);
+
+            if (this.timeDimension != null) {
+                timeLen = ds.getDimensions().stream()
+                        .filter(dimension -> this.timeDimension.equals(dimension.getShortName()))
+                        .map(Dimension::getLength)
+                        .collect(Collectors.toList()).get(0);
+            }
         }
 
-        return generateChunkBoundrySlices(tilesDesired, dimensionNameToLength);
+        return addTimeDimension(generateChunkBoundrySlices(tilesDesired, dimensionNameToLength), timeLen);
 
     }
 
@@ -54,7 +64,7 @@ public class SliceFileByTilesDesired implements FileSlicer {
                     Integer lengthOfDimension = stringIntegerEntry.getValue();
                     Integer stepSize = calculateStepSize(stringIntegerEntry.getValue(), tilesDesired, dimensionNameToLength.size());
                     Set<String> bounds = new LinkedHashSet<>();
-                    for(int i = 0; i < lengthOfDimension; i += stepSize){
+                    for (int i = 0; i < lengthOfDimension; i += stepSize) {
                         bounds.add(
                                 dimensionName + ":" +
                                         i + ":" +
@@ -70,8 +80,25 @@ public class SliceFileByTilesDesired implements FileSlicer {
 
     }
 
+    List<String> addTimeDimension(List<String> specs, Integer timeLen) {
+
+        if(timeLen > 0) {
+            return specs.stream().map(sectionSpec ->
+                    IntStream.range(0, timeLen)
+                            .mapToObj(timeIndex -> this.timeDimension + ":" + timeIndex + ":" + (timeIndex + 1) + "," + sectionSpec)
+                            .collect(Collectors.toList()))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+        }else {
+            return specs;
+        }
+    }
+
     private Integer calculateStepSize(Integer lengthOfDimension, Integer chunksDesired, Integer numberOfDimensions) {
         return new Double(Math.floor(lengthOfDimension / (Math.pow(chunksDesired, (1.0 / numberOfDimensions))))).intValue();
     }
 
+    public void setTimeDimension(String timeDimension) {
+        this.timeDimension = timeDimension;
+    }
 }

@@ -7,6 +7,8 @@
 package gov.nasa.jpl.nexus.ningester.processors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import gov.nasa.jpl.nexus.ningester.configuration.properties.PythonProcessorModule;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.core.io.Resource;
@@ -39,7 +41,7 @@ public class PythonChainProcessor {
         this.granule = granule.getFile();
     }
 
-    public NexusContent.NexusTile sectionSpecProcessor(String sectionSpec) {
+    public NexusContent.NexusTile nexusTileProcessor(NexusContent.NexusTile nexusTile) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
@@ -47,7 +49,11 @@ public class PythonChainProcessor {
 
         PythonChainProcessorRequest chainProcessorRequest = new PythonChainProcessorRequest();
         chainProcessorRequest.setProcessorList(processorList);
-        chainProcessorRequest.setInputData(sectionSpec);
+        try {
+            chainProcessorRequest.setNexusTile(JsonFormat.printer().print(nexusTile));
+        } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+        }
 
         HttpEntity<PythonChainProcessorRequest> requestEntity = new HttpEntity<>(chainProcessorRequest, headers);
 
@@ -72,7 +78,7 @@ public class PythonChainProcessor {
         private List<PythonProcessorModule> processorList;
 
         @JsonProperty("input_data")
-        private String inputData;
+        private String nexusTile;
 
         public List<PythonProcessorModule> getProcessorList() {
             return processorList;
@@ -82,12 +88,12 @@ public class PythonChainProcessor {
             this.processorList = processorList;
         }
 
-        public String getInputData() {
-            return inputData;
+        public String getNexusTile() {
+            return nexusTile;
         }
 
-        public void setInputData(String inputData) {
-            this.inputData = inputData;
+        public void setNexusTile(String nexusTile) {
+            this.nexusTile = nexusTile;
         }
     }
 

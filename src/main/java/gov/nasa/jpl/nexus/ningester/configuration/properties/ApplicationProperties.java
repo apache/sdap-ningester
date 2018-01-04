@@ -16,6 +16,11 @@ import java.util.List;
 @Component
 public class ApplicationProperties {
 
+    private String tileSlicer;
+
+    @NestedConfigurationProperty
+    private final SliceFileByTilesDesired sliceFileByTilesDesired = new SliceFileByTilesDesired();
+
     private List<String> tileProcessors = new ArrayList<>();
 
     @NestedConfigurationProperty
@@ -23,9 +28,6 @@ public class ApplicationProperties {
 
     @NestedConfigurationProperty
     private final AddTimeFromGranuleName addTimeFromGranuleName = new AddTimeFromGranuleName();
-
-    @NestedConfigurationProperty
-    private final AddTimeToSectionSpec addTimeToSectionSpec = new AddTimeToSectionSpec();
 
     @NestedConfigurationProperty
     private final GenerateTileId generateTileId = new GenerateTileId();
@@ -44,10 +46,6 @@ public class ApplicationProperties {
         return tileProcessors;
     }
 
-    public AddTimeToSectionSpec getAddTimeToSectionSpec() {
-        return addTimeToSectionSpec;
-    }
-
     public AddDayOfYearAttribute getAddDayOfYearAttribute() {
         return addDayOfYearAttribute;
     }
@@ -64,4 +62,15 @@ public class ApplicationProperties {
         return addDatasetName;
     }
 
+    public String getTileSlicer() {
+        return tileSlicer;
+    }
+
+    public void setTileSlicer(String tileSlicer) {
+        this.tileSlicer = tileSlicer;
+    }
+
+    public SliceFileByTilesDesired getSliceFileByTilesDesired() {
+        return sliceFileByTilesDesired;
+    }
 }

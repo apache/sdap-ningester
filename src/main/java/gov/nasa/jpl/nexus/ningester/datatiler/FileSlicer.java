@@ -6,10 +6,11 @@
 package gov.nasa.jpl.nexus.ningester.datatiler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface FileSlicer {
 
-    List<String> generateSlices(File inputfile);
+    List<String> generateSlices(File inputfile) throws IOException;
 
 }

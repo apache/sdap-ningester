@@ -3,22 +3,23 @@ package gov.nasa.jpl.nexus.ningester.datatiler;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.item.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import ucar.ma2.Array;
-import ucar.nc2.Variable;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
+import org.springframework.batch.item.NonTransientResourceException;
+import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
+import org.springframework.core.io.Resource;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
+import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NetCDFItemReader implements ItemReader<String>, ItemStream {
+public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<NexusContent.NexusTile> {
 
     private static final Logger log = LoggerFactory.getLogger(NetCDFItemReader.class);
 
@@ -27,7 +28,7 @@ public class NetCDFItemReader implements ItemReader<String>, ItemStream {
     private List<String> tileSpecList;
     private Integer currentTileSpecIndex;
 
-    private File netCDFFile;
+    private Resource netCDFResource;
     private NetcdfDataset ds;
     private FileSlicer fileSlicer;
 
@@ -36,44 +37,64 @@ public class NetCDFItemReader implements ItemReader<String>, ItemStream {
      *
      * @param fileSlicer Object responsible for slicing the NetCDF file into tiles.
      */
-    @Autowired
     public NetCDFItemReader(FileSlicer fileSlicer) {
         this.fileSlicer = fileSlicer;
     }
 
-    @Autowired
-    public void setNetCDFFile(File netCDFFile) {
-        this.netCDFFile = netCDFFile;
-    }
-
     @Override
-    public String read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-
+    public NexusContent.NexusTile read() {
+        if(this.currentTileSpecIndex == this.tileSpecList.size()){
+            //End of stream
+            return null;
+        }
         String currentSpec = this.tileSpecList.get(this.currentTileSpecIndex);
-        Map<String, String> dimensionToSpec = Arrays.stream(currentSpec.split(","))
-                .collect(Collectors.toMap(
-                        dimension -> dimension.split(":")[0],
-                        dimension -> dimension.substring(dimension.indexOf(":") + 1, dimension.length())));
 
-        Variable varToRead = this.ds.getVariables().get(0);
-        String spec = varToRead.getDimensions().stream()
-                        .map(dimension -> dimensionToSpec.get(dimension.getShortName()))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.joining(","));
+        URL netCDFUrl = null;
+        try {
+            netCDFUrl = this.netCDFResource.getURL();
+        } catch (IOException e) {
+            throw new UnexpectedInputException("Generic IOException", e);
+        }
 
-        spec = ":," + spec;
-        Array data = this.ds.getVariables().get(0).read(spec);
+        NexusContent.NexusTile.Builder nexusTileBuilder = NexusContent.NexusTile.newBuilder();
+        nexusTileBuilder.getSummaryBuilder()
+                .setSectionSpec(currentSpec)
+                .setGranule(netCDFUrl.toString());
+//        Map<String, String> dimensionToSpec = Arrays.stream(currentSpec.split(","))
+//                .collect(Collectors.toMap(
+//                        dimension -> dimension.split(":")[0],
+//                        dimension -> dimension.substring(dimension.indexOf(":") + 1, dimension.length())));
+//
+//        Variable varToRead = this.ds.getVariables().get(0);
+//        String spec = varToRead.getDimensions().stream()
+//                .map(dimension -> dimensionToSpec.get(dimension.getShortName()))
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.joining(","));
+//
+//        spec = ":," + spec;
+//        Array data = this.ds.getVariables().get(0).read(spec);
 
         this.currentTileSpecIndex++;
-        return data.toString();
+        return nexusTileBuilder.build();
     }
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
 
+        File netCDFFile = null;
+        try {
+            netCDFFile = this.netCDFResource.getFile();
+        } catch (IOException e) {
+            throw new ItemStreamException(e);
+        }
+
         //Every time we open the file we generate the tile specs according to the given file slicer
-        this.tileSpecList = fileSlicer.generateSlices(this.netCDFFile);
-        log.debug("Generated tile specifications for {}\nINDEX\tTILE SPECIFICATION\n{}", this.netCDFFile.getName(),
+        try {
+            this.tileSpecList = fileSlicer.generateSlices(netCDFFile);
+        } catch (IOException e) {
+            throw new ItemStreamException(e);
+        }
+        log.debug("Generated tile specifications for {}\nINDEX\tTILE SPECIFICATION\n{}", netCDFFile.getName(),
                 IntStream.range(0, this.tileSpecList.size())
                         .mapToObj(i -> i + "\t" + this.tileSpecList.get(i))
                         .collect(Collectors.joining("\n")));
@@ -111,5 +132,10 @@ public class NetCDFItemReader implements ItemReader<String>, ItemStream {
             throw new ItemStreamException(e);
         }
 
+    }
+
+    @Override
+    public void setResource(Resource resource) {
+        this.netCDFResource = resource;
     }
 }

@@ -75,6 +75,45 @@ public class SliceFileByTilesDesiredTest {
     }
 
     @Test
+    public void testAddTimeDimension() {
+
+        SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
+        slicer.setTimeDimension("time");
+
+        Integer tilesDesired = 4;
+        Integer timeLen = 3;
+
+        Map<String, Integer> dimensionNameToLength = new LinkedHashMap<>();
+        dimensionNameToLength.put("lat", 8);
+        dimensionNameToLength.put("lon", 8);
+
+        List<String> result = slicer.generateChunkBoundrySlices(tilesDesired, dimensionNameToLength);
+        result = slicer.addTimeDimension(result, timeLen);
+
+        assertEquals(tilesDesired * timeLen, result.size());
+
+        String[] expected = new String[]{
+                "time:0:1,lat:0:4,lon:0:4",
+                "time:1:2,lat:0:4,lon:0:4",
+                "time:2:3,lat:0:4,lon:0:4",
+
+                "time:0:1,lat:0:4,lon:4:8",
+                "time:1:2,lat:0:4,lon:4:8",
+                "time:2:3,lat:0:4,lon:4:8",
+
+                "time:0:1,lat:4:8,lon:0:4",
+                "time:1:2,lat:4:8,lon:0:4",
+                "time:2:3,lat:4:8,lon:0:4",
+
+                "time:0:1,lat:4:8,lon:4:8",
+                "time:1:2,lat:4:8,lon:4:8",
+                "time:2:3,lat:4:8,lon:4:8"};
+        assertThat(result, containsInAnyOrder(expected));
+        assertThat(result, contains(expected));
+
+    }
+
+    @Test
     public void testGenerateChunkBoundrySlicesWithMurDimensions() {
 
         SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
@@ -90,6 +129,28 @@ public class SliceFileByTilesDesiredTest {
         assertEquals(tilesDesired + 72, result.size());
 
         assertThat(result, hasItems("lat:0:249,lon:0:500", "lat:0:249,lon:500:1000", "lat:17928:17999,lon:35500:36000"));
+
+    }
+
+    @Test
+    public void testAddTimeDimensionWithMurDimensionsAndTime() {
+
+        SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
+
+        Integer tilesDesired = 5184;
+
+        Map<String, Integer> dimensionNameToLength = new LinkedHashMap<>();
+        dimensionNameToLength.put("lat", 17999);
+        dimensionNameToLength.put("lon", 36000);
+
+        slicer.setTimeDimension("time");
+
+        List<String> result = slicer.generateChunkBoundrySlices(tilesDesired, dimensionNameToLength);
+        result = slicer.addTimeDimension(result, 1);
+
+        assertEquals(tilesDesired + 72, result.size());
+
+        assertThat(result, hasItems("time:0:1,lat:0:249,lon:0:500", "time:0:1,lat:0:249,lon:500:1000", "time:0:1,lat:17928:17999,lon:35500:36000"));
 
     }
 }

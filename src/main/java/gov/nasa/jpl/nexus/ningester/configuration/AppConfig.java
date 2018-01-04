@@ -6,12 +6,16 @@
 package gov.nasa.jpl.nexus.ningester.configuration;
 
 import gov.nasa.jpl.nexus.ningester.configuration.properties.ApplicationProperties;
+import gov.nasa.jpl.nexus.ningester.datatiler.FileSlicer;
+import gov.nasa.jpl.nexus.ningester.datatiler.SliceFileByTilesDesired;
 import gov.nasa.jpl.nexus.ningester.http.NexusTileConverter;
 import gov.nasa.jpl.nexus.ningester.processors.*;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +43,17 @@ public class AppConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "ningester", name = "tile_slicer", havingValue = "sliceFileByTilesDesired")
+    @Qualifier("fileSlicer")
+    protected FileSlicer sliceFileByTilesDesired(){
+        SliceFileByTilesDesired fileSlicer = new SliceFileByTilesDesired();
+        fileSlicer.setDimensions(applicationProperties.getSliceFileByTilesDesired().getDimensions());
+        fileSlicer.setTilesDesired(applicationProperties.getSliceFileByTilesDesired().getTilesDesired());
+        fileSlicer.setTimeDimension(applicationProperties.getSliceFileByTilesDesired().getTimeDimension());
+        return fileSlicer;
+    }
+
+    @Bean
     protected HttpMessageConverter nexusTileConverter() {
         NexusTileConverter converter = new NexusTileConverter();
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
@@ -45,6 +61,7 @@ public class AppConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "ningester.pythonChainProcessor", name = "enabled")
     protected RestTemplate restTemplate(HttpMessageConverter nexusTileConverter) {
         RestTemplate template = new RestTemplate();
 
@@ -87,16 +104,6 @@ public class AppConfig {
     }
 
     @Bean
-    @JobScope
-    @ConditionalOnProperty(prefix = "ningester.addTimeToSectionSpec", name = "enabled")
-    protected ItemProcessor<String, String> addTimeToSectionSpec(Resource granule) throws IOException {
-
-        AddTimeToSectionSpec processor = new AddTimeToSectionSpec(applicationProperties.getAddTimeToSectionSpec().getTimeLen(), granule.getFile().getAbsolutePath());
-        processor.setTimeVar(applicationProperties.getAddTimeToSectionSpec().getTimeVar());
-        return processor::process;
-    }
-
-    @Bean
     @ConditionalOnProperty(prefix = "ningester.generateTileId", name = "enabled")
     protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> generateTileId() {
 
@@ -108,13 +115,13 @@ public class AppConfig {
     @Bean
     @JobScope
     @ConditionalOnProperty(prefix = "ningester.pythonChainProcessor", name = "enabled")
-    protected ItemProcessor<String, NexusContent.NexusTile> pythonChainProcessor(RestTemplate restTemplate, Resource granule) throws IOException {
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> pythonChainProcessor(RestTemplate restTemplate, Resource granule) throws IOException {
         PythonChainProcessor processor = new PythonChainProcessor(restTemplate);
         processor.setGranule(granule);
         processor.setProcessorList(applicationProperties.getPythonChainProcessor().getProcessorList());
         processor.setUriPath(applicationProperties.getPythonChainProcessor().getUriPath());
 
-        return processor::sectionSpecProcessor;
+        return processor::nexusTileProcessor;
     }
 
 }
