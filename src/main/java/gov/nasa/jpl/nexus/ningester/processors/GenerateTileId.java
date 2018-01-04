@@ -6,8 +6,13 @@
 
 package gov.nasa.jpl.nexus.ningester.processors;
 
+import com.google.common.io.Files;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class GenerateTileId {
@@ -18,11 +23,17 @@ public class GenerateTileId {
         this.salt = salt;
     }
 
-    public NexusContent.NexusTile addTileId(NexusContent.NexusTile inputTile) {
+    public NexusContent.NexusTile addTileId(NexusContent.NexusTile inputTile){
 
         NexusContent.NexusTile.Builder outTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(inputTile);
         String granuleFileName = inputTile.getSummary().getGranule();
-        String granuleName = granuleFileName.substring(0, granuleFileName.length() - 3);
+        Path granulePath = null;
+        try {
+            granulePath = Paths.get(new URI(granuleFileName));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        String granuleName = Files.getNameWithoutExtension(granulePath.getFileName().toString());
         String spec = inputTile.getSummary().getSectionSpec();
 
         String tileId = UUID.nameUUIDFromBytes((granuleName + spec + salt).getBytes()).toString();

@@ -7,6 +7,7 @@ package gov.nasa.jpl.nexus.ningester.configuration;
 
 import gov.nasa.jpl.nexus.ningester.configuration.properties.ApplicationProperties;
 import gov.nasa.jpl.nexus.ningester.datatiler.FileSlicer;
+import gov.nasa.jpl.nexus.ningester.datatiler.SliceFileByDimension;
 import gov.nasa.jpl.nexus.ningester.datatiler.SliceFileByTilesDesired;
 import gov.nasa.jpl.nexus.ningester.http.NexusTileConverter;
 import gov.nasa.jpl.nexus.ningester.processors.*;
@@ -15,7 +16,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,11 +44,22 @@ public class AppConfig {
     @Bean
     @ConditionalOnProperty(prefix = "ningester", name = "tile_slicer", havingValue = "sliceFileByTilesDesired")
     @Qualifier("fileSlicer")
-    protected FileSlicer sliceFileByTilesDesired(){
+    protected FileSlicer sliceFileByTilesDesired() {
         SliceFileByTilesDesired fileSlicer = new SliceFileByTilesDesired();
         fileSlicer.setDimensions(applicationProperties.getSliceFileByTilesDesired().getDimensions());
         fileSlicer.setTilesDesired(applicationProperties.getSliceFileByTilesDesired().getTilesDesired());
         fileSlicer.setTimeDimension(applicationProperties.getSliceFileByTilesDesired().getTimeDimension());
+        return fileSlicer;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "ningester", name = "tile_slicer", havingValue = "sliceFileByDimension")
+    @Qualifier("fileSlicer")
+    protected FileSlicer sliceFileByDimension() {
+        SliceFileByDimension fileSlicer = new SliceFileByDimension();
+        fileSlicer.setDimensions(applicationProperties.getSliceFileByDimension().getDimensions());
+        fileSlicer.setSliceByDimension(applicationProperties.getSliceFileByDimension().getSliceByDimension());
+        fileSlicer.setDimensionNamePrefix(applicationProperties.getSliceFileByDimension().getDimensionNamePrefix());
         return fileSlicer;
     }
 

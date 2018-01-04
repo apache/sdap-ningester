@@ -5,6 +5,7 @@
  * ****************************************************************************/
 package gov.nasa.jpl.nexus.ningester.datatiler;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class SliceFileByDimension implements FileSlicer {
+public class SliceFileByDimension implements FileSlicer {
 
     private String sliceByDimension;
     private List<String> dimensions;
@@ -47,6 +48,12 @@ class SliceFileByDimension implements FileSlicer {
     }
 
     List<String> indexedDimensionSlicing(File inputfile) throws IOException {
+
+        // This is sort of a hack to help the python netcdf library. When you try to get dimensions by name and they are unnamed, the
+        // python library uses 'phony_dim_' then the index of the dimension as the dimension name. Weird, I know.
+        if(Strings.isNullOrEmpty(this.dimensionNamePrefix)){
+            this.dimensionNamePrefix = "phony_dim_";
+        }
         Map<String, Integer> dimensionNameToLength;
         try (NetcdfDataset ds = NetcdfDataset.openDataset(inputfile.getAbsolutePath())) {
 

@@ -19,6 +19,9 @@ public class ApplicationProperties {
     private String tileSlicer;
 
     @NestedConfigurationProperty
+    private final SliceFileByDimension sliceFileByDimension = new SliceFileByDimension();
+
+    @NestedConfigurationProperty
     private final SliceFileByTilesDesired sliceFileByTilesDesired = new SliceFileByTilesDesired();
 
     private List<String> tileProcessors = new ArrayList<>();
@@ -72,5 +75,9 @@ public class ApplicationProperties {
 
     public SliceFileByTilesDesired getSliceFileByTilesDesired() {
         return sliceFileByTilesDesired;
+    }
+
+    public SliceFileByDimension getSliceFileByDimension() {
+        return sliceFileByDimension;
     }
 }
