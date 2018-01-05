@@ -12,7 +12,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestSolrStore {
+public class SolrStoreTest {
 
     @Test
     public void testGetSolrDocFromTileSummary() {

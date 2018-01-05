@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 
-public class TestAddDayOfYearAttribute {
+public class AddDayOfYearAttributeTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

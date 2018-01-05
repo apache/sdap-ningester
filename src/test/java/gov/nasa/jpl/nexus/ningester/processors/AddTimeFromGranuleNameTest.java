@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
-public class TestAddTimeFromGranuleName {
+public class AddTimeFromGranuleNameTest {
 
 
     @Rule

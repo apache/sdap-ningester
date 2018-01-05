@@ -11,7 +11,7 @@ import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class TestGenerateTileId {
+public class GenerateTileIdTest {
 
 
     @Test
