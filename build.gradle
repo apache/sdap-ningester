@@ -37,6 +37,8 @@ ext{
 	protobufUtilVersion = "3.5.1"
 	netcdfJavaVersion = '4.6.9'
 	guavaVersion = "23.2-jre"
+//	springDataCassandraVersion = '1.3.4.RELEASE'
+//	springDataSolrVersion = '2.0.2.RELEASE'
 }
 
 sourceSets{
@@ -62,6 +64,8 @@ dependencies {
 
 	compile("org.springframework.boot:spring-boot-starter-batch")
 	compile("org.springframework:spring-web")
+	compile("org.springframework.data:spring-data-cassandra")
+	compile("org.springframework.data:spring-data-solr")
 
 	compile("com.h2database:h2")
 	compile("org.nasa.jpl.nexus:nexus-messages:$nexusMessagesVersion")
