@@ -3,7 +3,7 @@
  * California Institute of Technology.  All rights reserved
  *****************************************************************************/
 
-package gov.nasa.jpl.nexus.ningester.configuration.properties;
+package gov.nasa.jpl.nexus.ningester.processors.properties;
 
 import java.util.HashMap;
 import java.util.Map;

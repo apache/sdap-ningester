@@ -5,6 +5,9 @@
 
 package gov.nasa.jpl.nexus.ningester.configuration.properties;
 
+import gov.nasa.jpl.nexus.ningester.datatiler.properties.SliceFileByDimension;
+import gov.nasa.jpl.nexus.ningester.datatiler.properties.SliceFileByTilesDesired;
+import gov.nasa.jpl.nexus.ningester.processors.properties.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;

@@ -3,22 +3,23 @@
  * California Institute of Technology.  All rights reserved
  *****************************************************************************/
 
-package gov.nasa.jpl.nexus.ningester.configuration.properties;
+package gov.nasa.jpl.nexus.ningester.processors.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties
-@Component("generateTileIdProperties")
-public class GenerateTileId {
+@Component("addDayOfYearAttributeProperties")
+public class AddDayOfYearAttribute {
 
-    private String salt = "";
+    private String regex;
 
-    public String getSalt() {
-        return salt;
+
+    public String getRegex() {
+        return regex;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setRegex(String regex) {
+        this.regex = regex;
     }
 }

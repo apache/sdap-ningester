@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SolrStore {
+public class SolrStore implements MetadataStore {
     private Environment environment;
     private SolrOperations solr;
 
@@ -44,6 +44,7 @@ public class SolrStore {
         this.environment = environment;
     }
 
+    @Override
     public void saveMetadata(Collection<NexusContent.NexusTile> nexusTiles) {
 
         List<SolrInputDocument> solrdocs = nexusTiles.stream()

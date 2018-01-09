@@ -9,7 +9,7 @@ package gov.nasa.jpl.nexus.ningester.processors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
-import gov.nasa.jpl.nexus.ningester.configuration.properties.PythonProcessorModule;
+import gov.nasa.jpl.nexus.ningester.processors.properties.PythonProcessorModule;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
