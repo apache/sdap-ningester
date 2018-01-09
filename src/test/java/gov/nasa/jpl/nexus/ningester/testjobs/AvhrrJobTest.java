@@ -8,9 +8,11 @@ package gov.nasa.jpl.nexus.ningester.testjobs;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = { "spring.config.location = classpath:testjobs/AvhrrJobTest.yml" })
+@TestPropertySource(properties = {"spring.config.location = classpath:testjobs/AvhrrJobTest.yml"})
 @ActiveProfiles({"test"})
 public class AvhrrJobTest {
 
@@ -32,6 +34,11 @@ public class AvhrrJobTest {
         @Bean
         JobLauncherTestUtils jobLauncherTestUtils() {
             return new JobLauncherTestUtils();
+        }
+
+        @Bean
+        ItemWriter<NexusContent.NexusTile> writer() {
+            return items -> System.out.println("Wrote " + items.size() + " item(s).");
         }
 
     }

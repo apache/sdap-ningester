@@ -4,6 +4,8 @@ import gov.nasa.jpl.nexus.ningester.configuration.properties.ApplicationProperti
 import gov.nasa.jpl.nexus.ningester.datatiler.FileSlicer;
 import gov.nasa.jpl.nexus.ningester.datatiler.NetCDFItemReader;
 import gov.nasa.jpl.nexus.ningester.processors.CompositeItemProcessor;
+import gov.nasa.jpl.nexus.ningester.writer.DataStore;
+import gov.nasa.jpl.nexus.ningester.writer.MetadataStore;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -12,9 +14,9 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableBatchProcessing
@@ -69,12 +73,15 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected ItemWriter<NexusContent.NexusTile> writer() {
-        return items -> {
-            for (NexusContent.NexusTile item : items) {
-                System.out.println("Got tile");
-            }
-        };
+    protected ItemWriter<NexusContent.NexusTile> writer(DataStore dataStore, MetadataStore metadataStore) {
+
+        CompositeItemWriter<NexusContent.NexusTile> compositeItemWriter = new CompositeItemWriter<>();
+        compositeItemWriter.setDelegates(Arrays.asList(
+                metadataStore::saveMetadata,
+                dataStore::saveData)
+        );
+
+        return compositeItemWriter;
     }
 
     @Bean

@@ -8,9 +8,9 @@ package gov.nasa.jpl.nexus.ningester.writer;
 
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface DataStore {
 
-    void saveData(Collection<NexusContent.NexusTile> nexusTiles);
+    void saveData(List<? extends NexusContent.NexusTile> nexusTiles);
 }

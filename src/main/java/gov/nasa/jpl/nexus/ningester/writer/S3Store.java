@@ -10,11 +10,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent.NexusTile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by djsilvan on 6/26/17.
@@ -29,7 +31,7 @@ public class S3Store implements DataStore {
         this.bucketName = bucketName;
     }
 
-    public void saveData(Collection<NexusTile> nexusTiles) {
+    public void saveData(List<? extends NexusTile> nexusTiles) {
 
         for (NexusTile tile : nexusTiles) {
             String tileId = getTileId(tile);

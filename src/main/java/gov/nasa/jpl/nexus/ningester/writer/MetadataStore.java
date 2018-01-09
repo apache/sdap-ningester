@@ -7,9 +7,9 @@ package gov.nasa.jpl.nexus.ningester.writer;
 
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface MetadataStore {
 
-    void saveMetadata(Collection<NexusContent.NexusTile> nexusTiles);
+    void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles);
 }

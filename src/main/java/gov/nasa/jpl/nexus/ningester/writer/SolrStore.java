@@ -45,7 +45,7 @@ public class SolrStore implements MetadataStore {
     }
 
     @Override
-    public void saveMetadata(Collection<NexusContent.NexusTile> nexusTiles) {
+    public void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
 
         List<SolrInputDocument> solrdocs = nexusTiles.stream()
                 .map(nexusTile -> getSolrDocFromTileSummary(nexusTile.getSummary()))

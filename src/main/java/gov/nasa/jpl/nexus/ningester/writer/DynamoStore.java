@@ -12,6 +12,7 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by djsilvan on 6/26/17.
@@ -28,7 +29,7 @@ public class DynamoStore implements DataStore {
         this.primaryKey = primaryKey;
     }
 
-    public void saveData(Collection<NexusContent.NexusTile> nexusTiles) {
+    public void saveData(List<? extends NexusContent.NexusTile> nexusTiles) {
 
         Table table = dynamoDB.getTable(tableName);
 

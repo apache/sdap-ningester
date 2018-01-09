@@ -27,7 +27,7 @@ public class CassandraStore implements DataStore {
     }
 
     @Override
-    public void saveData(Collection<NexusContent.NexusTile> nexusTiles) {
+    public void saveData(List<? extends NexusContent.NexusTile> nexusTiles) {
 
         String query = "insert into ${tableName} (tile_id, tile_blob) VALUES (?, ?)";
         cassandraTemplate.ingest(query, nexusTiles.stream()
