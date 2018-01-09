@@ -1,0 +1,13 @@
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.namespace?.startsWith('propdeps')) {
+                useModule('io.spring.gradle:propdeps-plugin:0.0.9.RELEASE')
+            }
+        }
+    }
+    repositories {
+        maven { url 'http://repo.spring.io/plugins-release' }
+        gradlePluginPortal()
+    }
+}

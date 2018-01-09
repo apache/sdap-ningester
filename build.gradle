@@ -1,24 +1,15 @@
-buildscript {
-	ext {
-		springBootVersion = '1.5.9.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-		maven { url 'http://repo.spring.io/plugins-release' }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
-	}
-}
+/*
+ *****************************************************************************
+ * Copyright (c) 2018 Jet Propulsion Laboratory,
+ * California Institute of Technology.  All rights reserved
+ *****************************************************************************/
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'propdeps'
-apply plugin: 'propdeps-maven'
-apply plugin: 'propdeps-idea'
-apply plugin: 'propdeps-eclipse'
+plugins {
+	id 'java'
+	id 'idea'
+	id 'org.springframework.boot' version '1.5.9.RELEASE'
+	id 'org.unbroken-dome.test-sets' version '1.4.2'
+}
 
 group = 'gov.nasa.jpl.nexus.ningester'
 version = '0.0.1-SNAPSHOT'
@@ -39,22 +30,8 @@ ext{
 	guavaVersion = "23.2-jre"
 }
 
-sourceSets{
-	main{
-		java{
-			resources{
-				srcDir 'src/python'
-				exclude 'src/python/test'
-			}
-		}
-	}
-	test{
-		java{
-			resources{
-				srcDir 'src/python/test'
-			}
-		}
-	}
+testSets {
+	testJobs
 }
 
 dependencyManagement {
@@ -64,8 +41,6 @@ dependencyManagement {
 }
 
 dependencies {
-	optional("org.springframework.boot:spring-boot-configuration-processor")
-
 	compile("org.springframework.boot:spring-boot-starter-batch")
 	compile("org.springframework:spring-web")
 	compile("org.springframework.data:spring-data-cassandra")
