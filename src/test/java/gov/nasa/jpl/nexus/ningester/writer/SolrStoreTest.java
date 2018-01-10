@@ -62,4 +62,76 @@ public class SolrStoreTest {
         assertEquals(10, doc.get("tile_count_i").getValue());
         assertEquals("test!1", doc.get("solr_id_s").getValue());
     }
+
+    @Test
+    public void testGeoIsPointWhenLatMinMaxEqualAndLonMinMaxEqual() {
+        SolrStore solrStore = new SolrStore(null);
+
+        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
+                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+                        .setLatMin(51)
+                        .setLatMax(51)
+                        .setLonMin(22)
+                        .setLonMax(22)
+                        .build())
+                .build();
+
+        SolrInputDocument doc = solrStore.getSolrDocFromTileSummary(tileSummary);
+
+        assertEquals("POINT(22.000 51.000)", doc.get("geo").getValue());
+    }
+
+    @Test
+    public void testGeoIsLineStringWhenLatMinMaxEqualAndLonMinMaxNotEqual() {
+        SolrStore solrStore = new SolrStore(null);
+
+        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
+                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+                        .setLatMin(51)
+                        .setLatMax(51)
+                        .setLonMin(22)
+                        .setLonMax(29)
+                        .build())
+                .build();
+
+        SolrInputDocument doc = solrStore.getSolrDocFromTileSummary(tileSummary);
+
+        assertEquals("LINESTRING (22.000 51.000, 29.000 51.000)", doc.get("geo").getValue());
+    }
+
+    @Test
+    public void testGeoIsLineStringWhenLatMinMaxNotEqualAndLonMinMaxEqual() {
+        SolrStore solrStore = new SolrStore(null);
+
+        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
+                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+                        .setLatMin(51)
+                        .setLatMax(59)
+                        .setLonMin(22)
+                        .setLonMax(22)
+                        .build())
+                .build();
+
+        SolrInputDocument doc = solrStore.getSolrDocFromTileSummary(tileSummary);
+
+        assertEquals("LINESTRING (22.000 51.000, 22.000 59.000)", doc.get("geo").getValue());
+    }
+
+    @Test
+    public void testGeoIsLineStringWhenLatMinMaxAlmostEqualAndLonMinMaxNotEqual() {
+        SolrStore solrStore = new SolrStore(null);
+
+        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
+                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+                        .setLatMin(-56.135883f)
+                        .setLatMax(-56.135674f)
+                        .setLonMin(-9.229431f)
+                        .setLonMax(-8.934967f)
+                        .build())
+                .build();
+
+        SolrInputDocument doc = solrStore.getSolrDocFromTileSummary(tileSummary);
+
+        assertEquals("LINESTRING (-9.229 -56.136, -8.935 -56.136)", doc.get("geo").getValue());
+    }
 }
