@@ -21,13 +21,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SolrStore implements MetadataStore {
-    private Environment environment;
+
+    private Integer commitWithin = 1000;
+    private Integer geoPrecision = 3;
+    private String collection = "nexustiles";
+
     private SolrOperations solr;
 
     private Logger log = LoggerFactory.getLogger(SolrStore.class);
 
     //TODO This will be refactored at some point to be dynamic per-message. Or maybe per-group.
-    private String tableName = "sea_surface_temp";
+    private static final String TABLE_NAME = "sea_surface_temp";
 
     private static final SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -39,18 +43,22 @@ public class SolrStore implements MetadataStore {
         this.solr = solr;
     }
 
-    @Resource
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-
     @Override
     public void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
 
         List<SolrInputDocument> solrdocs = nexusTiles.stream()
                 .map(nexusTile -> getSolrDocFromTileSummary(nexusTile.getSummary()))
                 .collect(Collectors.toList());
-        solr.saveDocuments(solrdocs, environment.getProperty("solrCommitWithin", Integer.class, 1000));
+        solr.saveDocuments(this.collection, solrdocs, commitWithin);
+    }
+
+    @Override
+    public void deleteMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+
+        List<String> tileIds = nexusTiles.stream()
+                .map(nexusTile -> nexusTile.getSummary().getDatasetName() + "!" + nexusTile.getSummary().getTileId())
+                .collect(Collectors.toList());
+        solr.deleteById(this.collection, tileIds);
     }
 
     public SolrInputDocument getSolrDocFromTileSummary(NexusContent.TileSummary summary) {
@@ -70,38 +78,37 @@ public class SolrStore implements MetadataStore {
 
         String granuleFileName = Paths.get(summary.getGranule()).getFileName().toString();
 
-        Map<String, Object> doc = new HashMap<>();
-        doc.put("table_s", tableName);
-        doc.put("geo", geo);
-        doc.put("id", summary.getTileId());
-        doc.put("solr_id_s", summary.getDatasetName() + "!" + summary.getTileId());
-        doc.put("dataset_id_s", summary.getDatasetUuid());
-        doc.put("sectionSpec_s", summary.getSectionSpec());
-        doc.put("dataset_s", summary.getDatasetName());
-        doc.put("granule_s", granuleFileName);
-        doc.put("tile_var_name_s", summary.getDataVarName());
-        doc.put("tile_min_lon", bbox.getLonMin());
-        doc.put("tile_max_lon", bbox.getLonMax());
-        doc.put("tile_min_lat", bbox.getLatMin());
-        doc.put("tile_max_lat", bbox.getLatMax());
-        doc.put("tile_min_time_dt", minTime);
-        doc.put("tile_max_time_dt", maxTime);
-        doc.put("tile_min_val_d", stats.getMin());
-        doc.put("tile_max_val_d", stats.getMax());
-        doc.put("tile_avg_val_d", stats.getMean());
-        doc.put("tile_count_i", Long.valueOf(stats.getCount()).intValue());
+        SolrInputDocument inputDocument = new SolrInputDocument();
+        inputDocument.addField("table_s", TABLE_NAME);
+        inputDocument.addField("geo", geo);
+        inputDocument.addField("id", summary.getTileId());
+        inputDocument.addField("solr_id_s", summary.getDatasetName() + "!" + summary.getTileId());
+        inputDocument.addField("dataset_id_s", summary.getDatasetUuid());
+        inputDocument.addField("sectionSpec_s", summary.getSectionSpec());
+        inputDocument.addField("dataset_s", summary.getDatasetName());
+        inputDocument.addField("granule_s", granuleFileName);
+        inputDocument.addField("tile_var_name_s", summary.getDataVarName());
+        inputDocument.addField("tile_min_lon", bbox.getLonMin());
+        inputDocument.addField("tile_max_lon", bbox.getLonMax());
+        inputDocument.addField("tile_min_lat", bbox.getLatMin());
+        inputDocument.addField("tile_max_lat", bbox.getLatMax());
+        inputDocument.addField("tile_min_time_dt", minTime);
+        inputDocument.addField("tile_max_time_dt", maxTime);
+        inputDocument.addField("tile_min_val_d", stats.getMin());
+        inputDocument.addField("tile_max_val_d", stats.getMax());
+        inputDocument.addField("tile_avg_val_d", stats.getMean());
+        inputDocument.addField("tile_count_i", Long.valueOf(stats.getCount()).intValue());
 
         summary.getGlobalAttributesList().forEach(attribute ->
-                doc.put(attribute.getName(), attribute.getValuesCount() == 1 ? attribute.getValues(0) : attribute.getValuesList())
+                inputDocument.addField(attribute.getName(), attribute.getValuesCount() == 1 ? attribute.getValues(0) : attribute.getValuesList())
         );
-
-        return toSolrInputDocument(doc);
+        return inputDocument;
     }
 
     private String determineGeo(NexusContent.TileSummary summary) {
         //Solr cannot index a POLYGON where all corners are the same point or when there are only 2 distinct points (line).
         //Solr is configured for a specific precision so we need to round to that precision before checking equality.
-        Integer geoPrecision = environment.getProperty("solrGeoPrecision", Integer.class, 3);
+        Integer geoPrecision = this.geoPrecision;
 
         BigDecimal latMin = BigDecimal.valueOf(summary.getBbox().getLatMin()).setScale(geoPrecision, BigDecimal.ROUND_HALF_UP);
         BigDecimal latMax = BigDecimal.valueOf(summary.getBbox().getLatMax()).setScale(geoPrecision, BigDecimal.ROUND_HALF_UP);
@@ -147,5 +154,17 @@ public class SolrStore implements MetadataStore {
         })));
 
         return solrDoc;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
+    public void setCommitWithin(Integer commitWithin) {
+        this.commitWithin = commitWithin;
+    }
+
+    public void setGeoPrecision(Integer geoPrecision) {
+        this.geoPrecision = geoPrecision;
     }
 }

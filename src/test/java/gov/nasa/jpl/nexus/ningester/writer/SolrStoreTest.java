@@ -8,7 +8,6 @@ package gov.nasa.jpl.nexus.ningester.writer;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.Test;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
-import org.springframework.mock.env.MockEnvironment;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,7 +16,6 @@ public class SolrStoreTest {
     @Test
     public void testGetSolrDocFromTileSummary() {
         SolrStore solrStore = new SolrStore(null);
-        solrStore.setEnvironment(new MockEnvironment());
 
         NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
                 .setTileId("1")

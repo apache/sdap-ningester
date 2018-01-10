@@ -57,11 +57,13 @@ public class PythonChainProcessor {
 
         HttpEntity<PythonChainProcessorRequest> requestEntity = new HttpEntity<>(chainProcessorRequest, headers);
 
-        return restTemplate.exchange(
+        NexusContent.NexusTile outNexusTile = restTemplate.exchange(
                 uriPath,
                 HttpMethod.POST,
                 requestEntity,
                 NexusContent.NexusTile.class).getBody();
+
+        return outNexusTile;
     }
 
     public void setProcessorList(List<PythonProcessorModule> processorList) {

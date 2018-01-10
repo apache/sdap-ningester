@@ -12,4 +12,6 @@ import java.util.List;
 public interface MetadataStore {
 
     void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles);
+
+    void deleteMetadata(List<? extends NexusContent.NexusTile> nexusTiles);
 }

@@ -30,7 +30,7 @@ public class CassandraStore implements DataStore {
     @Override
     public void saveData(List<? extends NexusContent.NexusTile> nexusTiles) {
 
-        String query = "insert into ${tableName} (tile_id, tile_blob) VALUES (?, ?)";
+        String query = "insert into "+ this.tableName + " (tile_id, tile_blob) VALUES (?, ?)";
         cassandraTemplate.ingest(query, nexusTiles.stream()
                 .map(nexusTile -> getCassandraRowFromTileData(nexusTile.getTile()))
                 .collect(Collectors.toList()));
@@ -40,5 +40,9 @@ public class CassandraStore implements DataStore {
 
         UUID tileId = UUID.fromString(tile.getTileId());
         return Arrays.asList(tileId, ByteBuffer.wrap(tile.toByteArray()));
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 }

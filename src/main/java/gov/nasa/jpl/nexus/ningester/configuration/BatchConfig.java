@@ -6,6 +6,7 @@ import gov.nasa.jpl.nexus.ningester.datatiler.NetCDFItemReader;
 import gov.nasa.jpl.nexus.ningester.processors.CompositeItemProcessor;
 import gov.nasa.jpl.nexus.ningester.writer.DataStore;
 import gov.nasa.jpl.nexus.ningester.writer.MetadataStore;
+import gov.nasa.jpl.nexus.ningester.writer.NexusWriter;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -73,15 +74,8 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected ItemWriter<NexusContent.NexusTile> writer(DataStore dataStore, MetadataStore metadataStore) {
-
-        CompositeItemWriter<NexusContent.NexusTile> compositeItemWriter = new CompositeItemWriter<>();
-        compositeItemWriter.setDelegates(Arrays.asList(
-                metadataStore::saveMetadata,
-                dataStore::saveData)
-        );
-
-        return compositeItemWriter;
+    protected ItemWriter<NexusContent.NexusTile> writer(NexusWriter nexusWriter) {
+        return nexusWriter::saveToNexus;
     }
 
     @Bean

@@ -1,57 +1,67 @@
-spring:
-    profiles: test
-
----
 # Tile Slicer Config
 ningester:
-    tile_slicer: sliceFileByDimension
-    sliceFileByDimension:
-      sliceByDimension: 1
-      dimensionNamePrefix: phony_dim_
-      dimensions:
-        - 0
-        - 1
+  tile_slicer: sliceFileByDimension
+  sliceFileByDimension:
+    sliceByDimension: 1
+    dimensionNamePrefix: phony_dim_
+    dimensions:
+      - 0
+      - 1
 
 ---
 # Tile processors configuration
 ningester:
-    tile_processors:
-      - pythonChainProcessor
-      - generateTileId
-      - addDatasetName
-    pythonChainProcessor:
-      enabled:
-      base_url: http://127.0.0.1:5000/
-      uri_path: processorchain
-      processor_list:
-        -
-          name: SwathReadingProcessor
-          config:
-            latitude: lat
-            longitude: lon
-            time: row_time
-            variable_to_read: smap_sss
-            glblattr_day: REV_START_TIME
-            glblattr_day_format: '%Y-%jT%H:%M:%S.%f'
-        -
-          name: EmptyTileFilter
-        -
-          name: TileSummarizingProcessor
-    generateTileId:
-      enabled:
-    addDatasetName:
-      enabled:
-      datasetName: SMAP_L2B_SSS
+  tile_processors:
+    - pythonChainProcessor
+    - generateTileId
+    - addDatasetName
+  pythonChainProcessor:
+    enabled:
+    processor_list:
+      -
+        name: SwathReadingProcessor
+        config:
+          latitude: lat
+          longitude: lon
+          time: row_time
+          variable_to_read: smap_sss
+          glblattr_day: REV_START_TIME
+          glblattr_day_format: '%Y-%jT%H:%M:%S.%f'
+      -
+        name: EmptyTileFilter
+      -
+        name: TileSummarizingProcessor
+  generateTileId:
+    enabled:
+  addDatasetName:
+    enabled:
+    datasetName: SMAP_L2B_SSS
 ---
 # Tile writer configuration
 ningester:
   tile_writer:
     data_store: cassandraStore
     metadata_store: solrStore
-    cassandraStore:
-      cassandraContactPoints: 127.0.0.1
-      cassandraKeyspace: nexustiles
-      cassandraPort: 9042
-    solrStore:
-      solrUrl: http://127.0.0.1:8983
-      solrCollection: nexustiles
+---
+# Connection settings for the test profile
+spring:
+    profiles: test
+    data:
+      cassandra:
+        keyspaceName: nexustiles
+        contactPoints: 127.0.0.1
+      solr:
+        host: http://127.0.0.1:8983/solr/
+
+ningester:
+  pythonChainProcessor:
+    base_url: http://127.0.0.1:5000/
+    uri_path: processorchain
+
+datasource:
+  solrStore:
+    commitWithin: 1500
+    geoPrecision: 3
+    collection: nexustiles
+  cassandraStore:
+    tableName: sea_surface_temp

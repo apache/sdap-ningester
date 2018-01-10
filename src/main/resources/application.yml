@@ -1,5 +1,9 @@
 spring:
+  profiles: default
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration
       - org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration
+
+

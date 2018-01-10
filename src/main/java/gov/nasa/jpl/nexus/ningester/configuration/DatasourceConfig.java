@@ -5,17 +5,23 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.datastax.driver.core.ProtocolVersion;
 import gov.nasa.jpl.nexus.ningester.configuration.properties.DatasourceProperties;
 import gov.nasa.jpl.nexus.ningester.writer.*;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.ClusterBuilderCustomizer;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
+import org.springframework.boot.autoconfigure.solr.SolrProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -31,16 +37,11 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class DatasourceConfig {
-
-    private final DatasourceProperties datasourceProperties;
-
-    @Autowired
-    public DatasourceConfig(DatasourceProperties datasourceProperties) {
-        this.datasourceProperties = datasourceProperties;
-    }
 
     @Bean
     @Profile("embedded")
@@ -54,53 +55,22 @@ public class DatasourceConfig {
 
     @Configuration
     @Profile("cassandra")
-    class CassandraConfiguration {
-        @Bean
-        public CassandraClusterFactoryBean cluster() {
-
-            CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
-            cluster.setContactPoints(datasourceProperties.getCassandraStore().getContactPoints());
-            cluster.setPort(datasourceProperties.getCassandraStore().getPort());
-
-            return cluster;
-        }
+    @Import({CassandraDataAutoConfiguration.class, CassandraAutoConfiguration.class})
+    static class CassandraConfiguration {
 
         @Bean
-        public CassandraMappingContext mappingContext() {
-            return new BasicCassandraMappingContext();
-        }
-
-        @Bean
-        public CassandraConverter converter() {
-            return new MappingCassandraConverter(mappingContext());
-        }
-
-        @Bean
-        public CassandraSessionFactoryBean session(){
-
-            CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
-            session.setCluster(cluster().getObject());
-            session.setKeyspaceName(datasourceProperties.getCassandraStore().getKeyspace());
-            session.setConverter(converter());
-            session.setSchemaAction(SchemaAction.NONE);
-
-            return session;
-        }
-
-        @Bean
-        public CassandraOperations cassandraTemplate(){
-            return new CassandraTemplate(session().getObject());
-        }
-
-        @Bean
-        public DataStore dataStore(CassandraOperations cassandraTemplate) {
+        public DataStore dataStore(CassandraTemplate cassandraTemplate) {
             return new CassandraStore(cassandraTemplate);
         }
     }
 
     @Configuration
     @Profile("dynamo")
-    class DynamoConfiguration {
+    static class DynamoConfiguration {
+
+        @Autowired
+        private DatasourceProperties datasourceProperties;
+
         @Bean
         public AmazonDynamoDB dynamoClient() {
             AmazonDynamoDB dynamoClient = new AmazonDynamoDBClient();
@@ -118,7 +88,10 @@ public class DatasourceConfig {
 
     @Configuration
     @Profile("s3")
-    class S3Configuration {
+    static class S3Configuration {
+        @Autowired
+        private DatasourceProperties datasourceProperties;
+
         @Bean
         public AmazonS3Client s3client() {
             AmazonS3Client s3Client = new AmazonS3Client();
@@ -133,41 +106,27 @@ public class DatasourceConfig {
     }
 
     @Configuration
-    @Profile("solr-standalone")
-    class SolrConfiguration {
-        @Bean
-        public SolrClient solrClient(){ return new HttpSolrClient(datasourceProperties.getSolrStore().getUrl() + datasourceProperties.getSolrStore().getCollection());}
+    @Profile("solr")
+    @Import({SolrAutoConfiguration.class})
+    static class SolrConfiguration {
+
+        @Autowired
+        private DatasourceProperties datasourceProperties;
 
         @Bean
         public SolrOperations solrTemplate(SolrClient solrClient) {
             return new SolrTemplate(solrClient);
         }
 
-        @Bean
-        public MetadataStore metadataStore(SolrOperations solrTemplate) {
-            return new SolrStore(solrTemplate);
-        }
-    }
-
-    @Configuration
-    @Profile("solr-cloud")
-    class SolrCloudConfiguration {
-        @Bean
-        public SolrClient solrClient(){
-            CloudSolrClient client = new CloudSolrClient(datasourceProperties.getSolrStore().getZkHost());
-            client.setDefaultCollection(datasourceProperties.getSolrStore().getCollection());
-
-            return client;
-        }
-
-        @Bean
-        public SolrOperations solrTemplate(SolrClient solrClient) {
-            return new SolrTemplate(solrClient);
-        }
 
         @Bean
         public MetadataStore metadataStore(SolrOperations solrTemplate) {
-            return new SolrStore(solrTemplate);
+            SolrStore solrStore =  new SolrStore(solrTemplate);
+            solrStore.setCollection(datasourceProperties.getSolrStore().getCollection());
+            solrStore.setCommitWithin(datasourceProperties.getSolrStore().getCommitWithin());
+            solrStore.setGeoPrecision(datasourceProperties.getSolrStore().getGeoPrecision());
+
+            return solrStore;
         }
     }
 }

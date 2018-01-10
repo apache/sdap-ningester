@@ -1,4 +1,5 @@
-/*****************************************************************************
+/*
+ *****************************************************************************
  * Copyright (c) 2018 Jet Propulsion Laboratory,
  * California Institute of Technology.  All rights reserved
  *****************************************************************************/
@@ -8,14 +9,14 @@ package gov.nasa.jpl.nexus.ningester.writer.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("solr")
+@ConfigurationProperties
 @Component("solrStoreProperties")
 public class SolrStore {
 
 
-    private String url;
-    private String zkHost;
-    private String collection;
+    private Integer commitWithin = 1000;
+    private Integer geoPrecision = 3;
+    private String collection = "nexustiles";
 
 
     public String getCollection() {
@@ -26,19 +27,19 @@ public class SolrStore {
         this.collection = collection;
     }
 
-    public String getZkHost() {
-        return zkHost;
+    public Integer getCommitWithin() {
+        return commitWithin;
     }
 
-    public void setZkHost(String zkHost) {
-        this.zkHost = zkHost;
+    public void setCommitWithin(Integer commitWithin) {
+        this.commitWithin = commitWithin;
     }
 
-    public String getUrl() {
-        return url;
+    public Integer getGeoPrecision() {
+        return geoPrecision;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setGeoPrecision(Integer geoPrecision) {
+        this.geoPrecision = geoPrecision;
     }
 }

@@ -1,7 +1,3 @@
-spring:
-    profiles: test
-
----
 # Tile Slicer Config
 ningester:
     tile_slicer: sliceFileByTilesDesired
@@ -21,8 +17,6 @@ ningester:
       - addDatasetName
     pythonChainProcessor:
       enabled:
-      base_url: http://127.0.0.1:5000/
-      uri_path: processorchain
       processor_list:
         -
           name: GridReadingProcessor
@@ -48,10 +42,24 @@ ningester:
   tile_writer:
     data_store: cassandraStore
     metadata_store: solrStore
-    cassandraStore:
-      cassandraContactPoints: 127.0.0.1
-      cassandraKeyspace: nexustiles
-      cassandraPort: 9042
-    solrStore:
-      solrUrl: http://127.0.0.1:8983
-      solrCollection: nexustiles
+---
+# Connection settings for the test profile
+spring:
+    profiles: test
+    data:
+      cassandra:
+        keyspaceName: nexustiles
+        contactPoints: 127.0.0.1
+      solr:
+        host: http://127.0.0.1:8983/solr/
+
+ningester:
+  pythonChainProcessor:
+    base_url: http://127.0.0.1:5000/
+    uri_path: processorchain
+
+datasource:
+  solrStore:
+    commitWithin: 1500
+    geoPrecision: 3
+    collection: nexustiles

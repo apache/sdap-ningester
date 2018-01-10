@@ -11,6 +11,9 @@ import gov.nasa.jpl.nexus.ningester.datatiler.SliceFileByDimension;
 import gov.nasa.jpl.nexus.ningester.datatiler.SliceFileByTilesDesired;
 import gov.nasa.jpl.nexus.ningester.http.NexusTileConverter;
 import gov.nasa.jpl.nexus.ningester.processors.*;
+import gov.nasa.jpl.nexus.ningester.writer.DataStore;
+import gov.nasa.jpl.nexus.ningester.writer.MetadataStore;
+import gov.nasa.jpl.nexus.ningester.writer.NexusWriter;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -84,6 +87,30 @@ public class AppConfig {
         template.setMessageConverters(converters);
 
         return template;
+    }
+
+    @Bean
+    public MetadataStore metadataStore() {
+        return new MetadataStore() {
+            @Override
+            public void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+            }
+
+            @Override
+            public void deleteMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+            }
+        };
+    }
+
+    @Bean
+    public DataStore dataStore() {
+        return nexusTiles -> {
+        };
+    }
+
+    @Bean
+    public NexusWriter nexusWriter(MetadataStore metadataStore, DataStore dataStore) {
+        return new NexusWriter(metadataStore, dataStore);
     }
 
     /*

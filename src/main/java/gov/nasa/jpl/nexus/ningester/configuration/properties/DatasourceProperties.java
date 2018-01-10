@@ -1,4 +1,5 @@
-/*****************************************************************************
+/*
+ *****************************************************************************
  * Copyright (c) 2018 Jet Propulsion Laboratory,
  * California Institute of Technology.  All rights reserved
  *****************************************************************************/
@@ -29,10 +30,6 @@ public class DatasourceProperties {
     @NestedConfigurationProperty
     private final SolrStore solrStore = new SolrStore();
 
-    public CassandraStore getCassandraStore() {
-        return cassandraStore;
-    }
-
     public DynamoStore getDynamoStore() {
         return dynamoStore;
     }
@@ -43,5 +40,9 @@ public class DatasourceProperties {
 
     public SolrStore getSolrStore() {
         return solrStore;
+    }
+
+    public CassandraStore getCassandraStore() {
+        return cassandraStore;
     }
 }
