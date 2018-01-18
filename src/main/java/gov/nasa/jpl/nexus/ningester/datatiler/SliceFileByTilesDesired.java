@@ -82,14 +82,14 @@ public class SliceFileByTilesDesired implements FileSlicer {
 
     List<String> addTimeDimension(List<String> specs, Integer timeLen) {
 
-        if(timeLen > 0) {
+        if (timeLen > 0) {
             return specs.stream().map(sectionSpec ->
                     IntStream.range(0, timeLen)
                             .mapToObj(timeIndex -> this.timeDimension + ":" + timeIndex + ":" + (timeIndex + 1) + "," + sectionSpec)
                             .collect(Collectors.toList()))
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
-        }else {
+        } else {
             return specs;
         }
     }

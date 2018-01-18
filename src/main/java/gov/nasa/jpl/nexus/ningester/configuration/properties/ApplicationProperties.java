@@ -19,30 +19,22 @@ import java.util.List;
 @Component
 public class ApplicationProperties {
 
-    private String tileSlicer;
-
     @NestedConfigurationProperty
     private final SliceFileByDimension sliceFileByDimension = new SliceFileByDimension();
-
     @NestedConfigurationProperty
     private final SliceFileByTilesDesired sliceFileByTilesDesired = new SliceFileByTilesDesired();
-
-    private List<String> tileProcessors = new ArrayList<>();
-
     @NestedConfigurationProperty
     private final AddDayOfYearAttribute addDayOfYearAttribute = new AddDayOfYearAttribute();
-
     @NestedConfigurationProperty
     private final AddTimeFromGranuleName addTimeFromGranuleName = new AddTimeFromGranuleName();
-
     @NestedConfigurationProperty
     private final GenerateTileId generateTileId = new GenerateTileId();
-
     @NestedConfigurationProperty
     private final PythonChainProcessor pythonChainProcessor = new PythonChainProcessor();
-
     @NestedConfigurationProperty
     private final AddDatasetName addDatasetName = new AddDatasetName();
+    private String tileSlicer;
+    private List<String> tileProcessors = new ArrayList<>();
 
     public PythonChainProcessor getPythonChainProcessor() {
         return pythonChainProcessor;

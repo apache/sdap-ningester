@@ -1,8 +1,8 @@
 /*
-*****************************************************************************
-* Copyright (c) 2018 Jet Propulsion Laboratory,
-* California Institute of Technology.  All rights reserved
-*****************************************************************************/
+ *****************************************************************************
+ * Copyright (c) 2018 Jet Propulsion Laboratory,
+ * California Institute of Technology.  All rights reserved
+ *****************************************************************************/
 package gov.nasa.jpl.nexus.ningester.processors;
 
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class AddTimeFromGranuleName{
+public class AddTimeFromGranuleName {
 
 
     private Pattern regex;
@@ -32,7 +32,7 @@ public class AddTimeFromGranuleName{
 
         NexusContent.NexusTile.Builder outTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(inputTile);
 
-        switch(inputTile.getTile().getTileTypeCase()){
+        switch (inputTile.getTile().getTileTypeCase()) {
             case GRID_TILE:
 
                 String granuleName = inputTile.getSummary().getGranule();

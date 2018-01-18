@@ -37,28 +37,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ActiveProfiles({"test", "cassandra", "solr"})
 public class AvhrrJobTest {
 
-    @TestConfiguration
-    static class NingesterApplicationTestsConfig {
-
-        @Bean
-        JobLauncherTestUtils jobLauncherTestUtils() {
-            return new JobLauncherTestUtils();
-        }
-
-    }
-
     @Autowired
     JobLauncherTestUtils jobLauncherTestUtils;
-
     @Autowired
     CassandraTemplate cassandraTemplate;
-
     @Autowired
     SolrTemplate solrTemplate;
-
     @Autowired
     DatasourceProperties datasourceProperties;
-
     @Autowired
     ApplicationProperties applicationProperties;
 
@@ -67,7 +53,6 @@ public class AvhrrJobTest {
         solrTemplate.delete(datasourceProperties.getSolrStore().getCollection(), new SimpleQuery("*:*"));
         cassandraTemplate.truncate(datasourceProperties.getCassandraStore().getTableName());
     }
-
 
     @Test
     public void testJobCompletes() throws Exception {
@@ -92,6 +77,16 @@ public class AvhrrJobTest {
         long cassandraCount = cassandraTemplate.count(datasourceProperties.getCassandraStore().getTableName());
 
         assertThat(cassandraCount, is(3904L));
+    }
+
+    @TestConfiguration
+    static class NingesterApplicationTestsConfig {
+
+        @Bean
+        JobLauncherTestUtils jobLauncherTestUtils() {
+            return new JobLauncherTestUtils();
+        }
+
     }
 
 

@@ -11,15 +11,12 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import gov.nasa.jpl.nexus.ningester.processors.properties.PythonProcessorModule;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,14 +28,8 @@ public class PythonChainProcessor {
 
     private String uriPath;
 
-    private File granule;
-
     public PythonChainProcessor(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-    }
-
-    public void setGranule(Resource granule) throws IOException {
-        this.granule = granule.getFile();
     }
 
     public NexusContent.NexusTile nexusTileProcessor(NexusContent.NexusTile nexusTile) {
@@ -57,13 +48,11 @@ public class PythonChainProcessor {
 
         HttpEntity<PythonChainProcessorRequest> requestEntity = new HttpEntity<>(chainProcessorRequest, headers);
 
-        NexusContent.NexusTile outNexusTile = restTemplate.exchange(
+        return restTemplate.exchange(
                 uriPath,
                 HttpMethod.POST,
                 requestEntity,
                 NexusContent.NexusTile.class).getBody();
-
-        return outNexusTile;
     }
 
     public void setProcessorList(List<PythonProcessorModule> processorList) {

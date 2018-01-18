@@ -11,7 +11,6 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ public class CassandraStore implements DataStore {
     @Override
     public void saveData(List<? extends NexusContent.NexusTile> nexusTiles) {
 
-        String query = "insert into "+ this.tableName + " (tile_id, tile_blob) VALUES (?, ?)";
+        String query = "insert into " + this.tableName + " (tile_id, tile_blob) VALUES (?, ?)";
         cassandraTemplate.ingest(query, nexusTiles.stream()
                 .map(nexusTile -> getCassandraRowFromTileData(nexusTile.getTile()))
                 .collect(Collectors.toList()));

@@ -51,7 +51,7 @@ public class SliceFileByDimension implements FileSlicer {
 
         // This is sort of a hack to help the python netcdf library. When you try to get dimensions by name and they are unnamed, the
         // python library uses 'phony_dim_' then the index of the dimension as the dimension name. Weird, I know.
-        if(Strings.isNullOrEmpty(this.dimensionNamePrefix)){
+        if (Strings.isNullOrEmpty(this.dimensionNamePrefix)) {
             this.dimensionNamePrefix = "phony_dim_";
         }
         Map<String, Integer> dimensionNameToLength;

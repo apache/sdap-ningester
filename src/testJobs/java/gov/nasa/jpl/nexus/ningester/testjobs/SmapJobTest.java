@@ -36,28 +36,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ActiveProfiles({"test", "cassandra", "solr"})
 public class SmapJobTest {
 
-    @TestConfiguration
-    static class NingesterApplicationTestsConfig {
-
-        @Bean
-        JobLauncherTestUtils jobLauncherTestUtils() {
-            return new JobLauncherTestUtils();
-        }
-
-    }
-
     @Autowired
     JobLauncherTestUtils jobLauncherTestUtils;
-
     @Autowired
     CassandraTemplate cassandraTemplate;
-
     @Autowired
     SolrTemplate solrTemplate;
-
     @Autowired
     DatasourceProperties datasourceProperties;
-
     @Autowired
     ApplicationProperties applicationProperties;
 
@@ -91,6 +77,16 @@ public class SmapJobTest {
 
         assertThat(cassandraCount, is(990L));
 
+
+    }
+
+    @TestConfiguration
+    static class NingesterApplicationTestsConfig {
+
+        @Bean
+        JobLauncherTestUtils jobLauncherTestUtils() {
+            return new JobLauncherTestUtils();
+        }
 
     }
 }

@@ -5,14 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.core.io.Resource;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -21,10 +19,8 @@ import java.util.stream.IntStream;
 
 public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<NexusContent.NexusTile> {
 
-    private static final Logger log = LoggerFactory.getLogger(NetCDFItemReader.class);
-
     static final String CURRENT_TILE_SPEC_INDEX_KEY = "current.tile.spec.index";
-
+    private static final Logger log = LoggerFactory.getLogger(NetCDFItemReader.class);
     private List<String> tileSpecList;
     private Integer currentTileSpecIndex;
 
@@ -43,7 +39,7 @@ public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<Nexus
 
     @Override
     public NexusContent.NexusTile read() {
-        if(this.currentTileSpecIndex == this.tileSpecList.size()){
+        if (this.currentTileSpecIndex == this.tileSpecList.size()) {
             //End of stream
             return null;
         }

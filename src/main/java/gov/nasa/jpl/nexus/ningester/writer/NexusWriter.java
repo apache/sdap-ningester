@@ -14,10 +14,9 @@ import java.util.List;
 
 public class NexusWriter {
 
+    private static final Logger log = LoggerFactory.getLogger(NexusWriter.class);
     private MetadataStore metadataStore;
     private DataStore dataStore;
-
-    private static final Logger log = LoggerFactory.getLogger(NexusWriter.class);
 
     public NexusWriter(MetadataStore metadataStore, DataStore dataStore) {
         this.metadataStore = metadataStore;

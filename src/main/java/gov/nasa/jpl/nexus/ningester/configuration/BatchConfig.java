@@ -3,9 +3,7 @@ package gov.nasa.jpl.nexus.ningester.configuration;
 import gov.nasa.jpl.nexus.ningester.configuration.properties.ApplicationProperties;
 import gov.nasa.jpl.nexus.ningester.datatiler.FileSlicer;
 import gov.nasa.jpl.nexus.ningester.datatiler.NetCDFItemReader;
-import gov.nasa.jpl.nexus.ningester.processors.CompositeItemProcessor;
-import gov.nasa.jpl.nexus.ningester.writer.DataStore;
-import gov.nasa.jpl.nexus.ningester.writer.MetadataStore;
+import gov.nasa.jpl.nexus.ningester.processors.*;
 import gov.nasa.jpl.nexus.ningester.writer.NexusWriter;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.core.Job;
@@ -17,18 +15,16 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableBatchProcessing
@@ -48,8 +44,8 @@ public class BatchConfig {
     protected ApplicationContext context;
 
     @Bean
-    public Job job(@Qualifier("step1") Step step1) {
-        return jobs.get("testNc4").start(step1).build();
+    public Job job(@Qualifier("ingestGranule") Step step1) {
+        return jobs.get("Ningester").start(step1).build();
     }
 
     @Bean
@@ -80,12 +76,45 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected Step step1(ItemStreamReader<NexusContent.NexusTile> reader, ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> processor, ItemWriter<NexusContent.NexusTile> writer) {
-        return steps.get("step1")
+    protected Step ingestGranule(ItemStreamReader<NexusContent.NexusTile> reader, ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> processor, ItemWriter<NexusContent.NexusTile> writer) {
+        return steps.get("ingestGranule")
                 .<NexusContent.NexusTile, NexusContent.NexusTile>chunk(10)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer).build();
+    }
+
+    /*
+     * Item Processor beans defined below
+     */
+    @Bean
+    @ConditionalOnBean(AddDatasetName.class)
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDatasetName(AddDatasetName addDatasetNameBean) {
+        return addDatasetNameBean::addDatasetName;
+    }
+
+    @Bean
+    @ConditionalOnBean(AddDayOfYearAttribute.class)
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDayOfYearAttribute(AddDayOfYearAttribute addDayOfYearAttributeBean) {
+        return addDayOfYearAttributeBean::setDayOfYearFromGranuleName;
+    }
+
+    @Bean
+    @ConditionalOnBean(AddTimeFromGranuleName.class)
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addTimeFromGranuleName(AddTimeFromGranuleName addTimeFromGranuleNameBean) {
+        return addTimeFromGranuleNameBean::setTimeFromGranuleName;
+    }
+
+    @Bean
+    @ConditionalOnBean(GenerateTileId.class)
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> generateTileId(GenerateTileId generateTileIdBean) {
+        return generateTileIdBean::addTileId;
+    }
+
+    @Bean
+    @ConditionalOnBean(PythonChainProcessor.class)
+    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> pythonChainProcessor(PythonChainProcessor pythonChainProcessorBean) {
+        return pythonChainProcessorBean::nexusTileProcessor;
     }
 
 }

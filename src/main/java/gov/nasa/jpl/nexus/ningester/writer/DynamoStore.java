@@ -11,7 +11,6 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

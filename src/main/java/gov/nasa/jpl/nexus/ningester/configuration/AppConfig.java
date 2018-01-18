@@ -15,21 +15,17 @@ import gov.nasa.jpl.nexus.ningester.writer.DataStore;
 import gov.nasa.jpl.nexus.ningester.writer.MetadataStore;
 import gov.nasa.jpl.nexus.ningester.writer.NexusWriter;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
-import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -118,47 +114,45 @@ public class AppConfig {
      */
     @Bean
     @ConditionalOnProperty(prefix = "ningester.addDatasetName", name = "enabled")
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDatasetName() {
+    protected AddDatasetName addDatasetNameBean() {
 
         AddDatasetName processor = new AddDatasetName(applicationProperties.getAddDatasetName().getDatasetName());
-        return processor::addDatasetName;
+        return processor;
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "ningester.addDayOfYearAttribute", name = "enabled")
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDayOfYearAttribute() {
+    protected AddDayOfYearAttribute addDayOfYearAttributeBean() {
 
         AddDayOfYearAttribute processor = new AddDayOfYearAttribute(applicationProperties.getAddDayOfYearAttribute().getRegex());
-        return processor::setDayOfYearFromGranuleName;
+        return processor;
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "ningester.addTimeFromGranuleName", name = "enabled")
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addTimeFromGranuleName() {
+    protected AddTimeFromGranuleName addTimeFromGranuleNameBean() {
 
         AddTimeFromGranuleName processor = new AddTimeFromGranuleName(applicationProperties.getAddTimeFromGranuleName().getRegex(), applicationProperties.getAddTimeFromGranuleName().getDateFormat());
-        return processor::setTimeFromGranuleName;
+        return processor;
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "ningester.generateTileId", name = "enabled")
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> generateTileId() {
+    protected GenerateTileId generateTileIdBean() {
 
         GenerateTileId processor = new GenerateTileId();
         processor.setSalt(applicationProperties.getGenerateTileId().getSalt());
-        return processor::addTileId;
+        return processor;
     }
 
     @Bean
-    @JobScope
     @ConditionalOnProperty(prefix = "ningester.pythonChainProcessor", name = "enabled")
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> pythonChainProcessor(RestTemplate restTemplate, Resource granule) throws IOException {
+    protected PythonChainProcessor pythonChainProcessorBean(RestTemplate restTemplate) {
         PythonChainProcessor processor = new PythonChainProcessor(restTemplate);
-        processor.setGranule(granule);
         processor.setProcessorList(applicationProperties.getPythonChainProcessor().getProcessorList());
         processor.setUriPath(applicationProperties.getPythonChainProcessor().getUriPath());
 
-        return processor::nexusTileProcessor;
+        return processor;
     }
 
 }

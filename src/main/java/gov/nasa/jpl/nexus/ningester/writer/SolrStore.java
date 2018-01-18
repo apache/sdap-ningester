@@ -10,10 +10,8 @@ import org.apache.solr.common.SolrInputField;
 import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.data.solr.core.SolrOperations;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -22,22 +20,19 @@ import java.util.stream.Collectors;
 
 public class SolrStore implements MetadataStore {
 
-    private Integer commitWithin = 1000;
-    private Integer geoPrecision = 3;
-    private String collection = "nexustiles";
-
-    private SolrOperations solr;
-
-    private Logger log = LoggerFactory.getLogger(SolrStore.class);
-
     //TODO This will be refactored at some point to be dynamic per-message. Or maybe per-group.
     private static final String TABLE_NAME = "sea_surface_temp";
-
     private static final SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     static {
         iso.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
+
+    private Integer commitWithin = 1000;
+    private Integer geoPrecision = 3;
+    private String collection = "nexustiles";
+    private SolrOperations solr;
+    private Logger log = LoggerFactory.getLogger(SolrStore.class);
 
     public SolrStore(SolrOperations solr) {
         this.solr = solr;
