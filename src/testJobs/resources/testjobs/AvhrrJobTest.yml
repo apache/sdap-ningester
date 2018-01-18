@@ -45,7 +45,9 @@ ningester:
 ---
 # Connection settings for the test profile
 spring:
-    profiles: test
+    profiles:
+      - test
+      - local
     data:
       cassandra:
         keyspaceName: nexustiles

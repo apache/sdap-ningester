@@ -31,6 +31,8 @@ import org.springframework.core.io.ResourceLoader;
 @Import(AppConfig.class)
 public class BatchConfig {
 
+    public static final String NINGESTER_JOB_NAME = "ningester";
+
     @Autowired
     protected JobBuilderFactory jobs;
 
@@ -45,7 +47,7 @@ public class BatchConfig {
 
     @Bean
     public Job job(@Qualifier("ingestGranule") Step step1) {
-        return jobs.get("Ningester").start(step1).build();
+        return jobs.get(NINGESTER_JOB_NAME).start(step1).build();
     }
 
     @Bean
