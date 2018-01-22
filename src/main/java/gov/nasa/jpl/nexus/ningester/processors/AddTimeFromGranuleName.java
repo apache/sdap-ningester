@@ -5,7 +5,7 @@
  *****************************************************************************/
 package gov.nasa.jpl.nexus.ningester.processors;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,9 +28,9 @@ public class AddTimeFromGranuleName {
         this.dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    public NexusContent.NexusTile setTimeFromGranuleName(NexusContent.NexusTile inputTile) {
+    public NexusTile setTimeFromGranuleName(NexusTile inputTile) {
 
-        NexusContent.NexusTile.Builder outTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(inputTile);
+        NexusTile.Builder outTileBuilder = NexusTile.newBuilder().mergeFrom(inputTile);
 
         switch (inputTile.getTile().getTileTypeCase()) {
             case GRID_TILE:

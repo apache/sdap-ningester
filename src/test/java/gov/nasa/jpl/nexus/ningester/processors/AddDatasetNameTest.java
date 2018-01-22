@@ -6,8 +6,8 @@
 
 package gov.nasa.jpl.nexus.ningester.processors;
 
+import org.apache.sdap.nexusproto.NexusTile;
 import org.junit.Test;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,11 +19,11 @@ public class AddDatasetNameTest {
 
         String datasetName = "testDataset";
 
-        NexusContent.NexusTile input = NexusContent.NexusTile.newBuilder().build();
+        NexusTile input = NexusTile.newBuilder().build();
 
         AddDatasetName processor = new AddDatasetName(datasetName);
 
-        NexusContent.NexusTile result = processor.addDatasetName(input);
+        NexusTile result = processor.addDatasetName(input);
 
         assertThat(result.getSummary().getDatasetName(), is(datasetName));
 

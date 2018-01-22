@@ -6,8 +6,7 @@
 
 package gov.nasa.jpl.nexus.ningester.processors;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
-
+import org.apache.sdap.nexusproto.NexusTile;
 
 public class AddDatasetName {
 
@@ -17,9 +16,9 @@ public class AddDatasetName {
         this.datasetName = datasetName;
     }
 
-    public NexusContent.NexusTile addDatasetName(NexusContent.NexusTile inputTile) {
+    public NexusTile addDatasetName(NexusTile inputTile) {
 
-        NexusContent.NexusTile.Builder outTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(inputTile);
+        NexusTile.Builder outTileBuilder = NexusTile.newBuilder().mergeFrom(inputTile);
 
         outTileBuilder.getSummaryBuilder().setDatasetName(datasetName);
 

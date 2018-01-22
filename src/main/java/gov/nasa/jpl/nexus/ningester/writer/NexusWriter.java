@@ -6,7 +6,7 @@
 
 package gov.nasa.jpl.nexus.ningester.writer;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class NexusWriter {
         this.dataStore = dataStore;
     }
 
-    public void saveToNexus(List<? extends NexusContent.NexusTile> nexusTiles) {
+    public void saveToNexus(List<? extends NexusTile> nexusTiles) {
         if (nexusTiles.size() > 0) {
             metadataStore.saveMetadata(nexusTiles);
 

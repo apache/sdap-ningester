@@ -1,6 +1,6 @@
 package gov.nasa.jpl.nexus.ningester.datatiler;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ExecutionContext;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<NexusContent.NexusTile> {
+public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<NexusTile> {
 
     static final String CURRENT_TILE_SPEC_INDEX_KEY = "current.tile.spec.index";
     private static final Logger log = LoggerFactory.getLogger(NetCDFItemReader.class);
@@ -38,7 +38,7 @@ public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<Nexus
     }
 
     @Override
-    public NexusContent.NexusTile read() {
+    public NexusTile read() {
         if (this.currentTileSpecIndex == this.tileSpecList.size()) {
             //End of stream
             return null;
@@ -52,23 +52,10 @@ public class NetCDFItemReader implements ResourceAwareItemReaderItemStream<Nexus
             throw new UnexpectedInputException("Generic IOException", e);
         }
 
-        NexusContent.NexusTile.Builder nexusTileBuilder = NexusContent.NexusTile.newBuilder();
+        NexusTile.Builder nexusTileBuilder = NexusTile.newBuilder();
         nexusTileBuilder.getSummaryBuilder()
                 .setSectionSpec(currentSpec)
                 .setGranule(netCDFUrl.toString());
-//        Map<String, String> dimensionToSpec = Arrays.stream(currentSpec.split(","))
-//                .collect(Collectors.toMap(
-//                        dimension -> dimension.split(":")[0],
-//                        dimension -> dimension.substring(dimension.indexOf(":") + 1, dimension.length())));
-//
-//        Variable varToRead = this.ds.getVariables().get(0);
-//        String spec = varToRead.getDimensions().stream()
-//                .map(dimension -> dimensionToSpec.get(dimension.getShortName()))
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.joining(","));
-//
-//        spec = ":," + spec;
-//        Array data = this.ds.getVariables().get(0).read(spec);
 
         this.currentTileSpecIndex++;
         return nexusTileBuilder.build();

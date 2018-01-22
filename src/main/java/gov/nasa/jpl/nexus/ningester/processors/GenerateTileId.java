@@ -7,7 +7,7 @@
 package gov.nasa.jpl.nexus.ningester.processors;
 
 import com.google.common.io.Files;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,9 +23,9 @@ public class GenerateTileId {
         this.salt = salt;
     }
 
-    public NexusContent.NexusTile addTileId(NexusContent.NexusTile inputTile) {
+    public NexusTile addTileId(NexusTile inputTile) {
 
-        NexusContent.NexusTile.Builder outTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(inputTile);
+        NexusTile.Builder outTileBuilder = NexusTile.newBuilder().mergeFrom(inputTile);
         String granuleFileName = inputTile.getSummary().getGranule();
         Path granulePath = null;
         try {

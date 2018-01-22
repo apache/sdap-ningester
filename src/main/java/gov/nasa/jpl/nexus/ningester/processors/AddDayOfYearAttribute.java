@@ -6,8 +6,9 @@
 
 package gov.nasa.jpl.nexus.ningester.processors;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.sdap.nexusproto.Attribute;
+import org.apache.sdap.nexusproto.NexusTile;
+import org.apache.sdap.nexusproto.TileSummary;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +24,6 @@ public class AddDayOfYearAttribute {
      * @param regex Regex used to match against the granule name. Must define exactly one capturing group that captures
      *              the day of year.
      */
-    @Autowired
     public AddDayOfYearAttribute(String regex) {
         this.regex = Pattern.compile(regex);
     }
@@ -34,7 +34,7 @@ public class AddDayOfYearAttribute {
      * @param nexusTile The tile to process
      * @return The processed tile
      */
-    public NexusContent.NexusTile setDayOfYearFromGranuleName(NexusContent.NexusTile nexusTile) {
+    public NexusTile setDayOfYearFromGranuleName(NexusTile nexusTile) {
 
         String granuleName = nexusTile.getSummary().getGranule();
         Matcher granuleNameMatcher = this.regex.matcher(granuleName);
@@ -54,10 +54,10 @@ public class AddDayOfYearAttribute {
 
 
         String dayOfYear = granuleNameMatcher.group(1);
-        NexusContent.NexusTile.Builder newTileBuilder = NexusContent.NexusTile.newBuilder().mergeFrom(nexusTile);
-        NexusContent.TileSummary.Builder newTileSummaryBuilder = newTileBuilder.getSummaryBuilder();
+        NexusTile.Builder newTileBuilder = NexusTile.newBuilder().mergeFrom(nexusTile);
+        TileSummary.Builder newTileSummaryBuilder = newTileBuilder.getSummaryBuilder();
         newTileSummaryBuilder.addGlobalAttributes(
-                NexusContent.Attribute.newBuilder()
+                Attribute.newBuilder()
                         .setName("day_of_year_i")
                         .addValues(dayOfYear)
                         .build()

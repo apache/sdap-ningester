@@ -7,28 +7,29 @@
 plugins {
 	id 'java'
 	id 'idea'
-	id 'propdeps'
-	id 'propdeps-maven'
-	id 'propdeps-idea'
-	id 'propdeps-eclipse'
+	id 'propdeps' version '0.0.9.RELEASE'
+	id 'propdeps-maven' version '0.0.9.RELEASE'
+	id 'propdeps-idea' version '0.0.9.RELEASE'
+	id 'propdeps-eclipse' version '0.0.9.RELEASE'
 	id 'org.springframework.boot' version '1.5.9.RELEASE'
 	id 'org.unbroken-dome.test-sets' version '1.4.2'
+	id 'net.researchgate.release' version '2.6.0'
 }
 
-group = 'gov.nasa.jpl.nexus.ningester'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+//group = 'gov.nasa.jpl.nexus.ningester'
+//version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
 	maven {
+	mavenLocal()
 		url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
 	}
-	mavenLocal()
 }
 
 ext{
-	nexusMessagesVersion = "1.2.0.RELEASE"
+	nexusprotoVersion = "1.0.1-SNAPSHOT"
 	protobufUtilVersion = "3.5.1"
 	netcdfJavaVersion = '4.6.9'
 	guavaVersion = "23.2-jre"
@@ -53,7 +54,7 @@ dependencies {
 	compile("org.springframework.data:spring-data-solr")
 
 	compile("com.h2database:h2")
-	compile("org.nasa.jpl.nexus:nexus-messages:$nexusMessagesVersion")
+	compile("org.apache.sdap:nexusproto:$nexusprotoVersion")
 	compile("com.google.protobuf:protobuf-java-util:$protobufUtilVersion")
 
 	compile("edu.ucar:cdm:${netcdfJavaVersion}")

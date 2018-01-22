@@ -5,7 +5,7 @@
 
 package gov.nasa.jpl.nexus.ningester.http;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -15,21 +15,21 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class NexusTileConverter extends AbstractHttpMessageConverter<NexusContent.NexusTile> {
+public class NexusTileConverter extends AbstractHttpMessageConverter<NexusTile> {
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return NexusContent.NexusTile.class.isAssignableFrom(clazz);
+        return NexusTile.class.isAssignableFrom(clazz);
     }
 
     @Override
-    protected NexusContent.NexusTile readInternal(Class<? extends NexusContent.NexusTile> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected NexusTile readInternal(Class<? extends NexusTile> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
 
-        return NexusContent.NexusTile.parseFrom(inputMessage.getBody());
+        return NexusTile.parseFrom(inputMessage.getBody());
     }
 
     @Override
-    protected void writeInternal(NexusContent.NexusTile nexusTile, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(NexusTile nexusTile, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         try {
             OutputStream outputStream = outputMessage.getBody();
             nexusTile.writeTo(outputStream);

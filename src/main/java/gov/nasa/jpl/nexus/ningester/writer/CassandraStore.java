@@ -6,7 +6,8 @@
 
 package gov.nasa.jpl.nexus.ningester.writer;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
+import org.apache.sdap.nexusproto.TileData;
 import org.springframework.data.cassandra.core.CassandraOperations;
 
 import java.nio.ByteBuffer;
@@ -27,7 +28,7 @@ public class CassandraStore implements DataStore {
     }
 
     @Override
-    public void saveData(List<? extends NexusContent.NexusTile> nexusTiles) {
+    public void saveData(List<? extends NexusTile> nexusTiles) {
 
         String query = "insert into " + this.tableName + " (tile_id, tile_blob) VALUES (?, ?)";
         cassandraTemplate.ingest(query, nexusTiles.stream()
@@ -35,7 +36,7 @@ public class CassandraStore implements DataStore {
                 .collect(Collectors.toList()));
     }
 
-    private List<Object> getCassandraRowFromTileData(NexusContent.TileData tile) {
+    private List<Object> getCassandraRowFromTileData(TileData tile) {
 
         UUID tileId = UUID.fromString(tile.getTileId());
         return Arrays.asList(tileId, ByteBuffer.wrap(tile.toByteArray()));

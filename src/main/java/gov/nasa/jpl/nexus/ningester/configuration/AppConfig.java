@@ -14,7 +14,7 @@ import gov.nasa.jpl.nexus.ningester.processors.*;
 import gov.nasa.jpl.nexus.ningester.writer.DataStore;
 import gov.nasa.jpl.nexus.ningester.writer.MetadataStore;
 import gov.nasa.jpl.nexus.ningester.writer.NexusWriter;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -89,11 +89,11 @@ public class AppConfig {
     public MetadataStore metadataStore() {
         return new MetadataStore() {
             @Override
-            public void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+            public void saveMetadata(List<? extends NexusTile> nexusTiles) {
             }
 
             @Override
-            public void deleteMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+            public void deleteMetadata(List<? extends NexusTile> nexusTiles) {
             }
         };
     }

@@ -5,9 +5,10 @@
 
 package gov.nasa.jpl.nexus.ningester.writer;
 
+import org.apache.sdap.nexusproto.NexusTile;
+import org.apache.sdap.nexusproto.TileSummary;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.solr.core.SolrOperations;
@@ -39,7 +40,7 @@ public class SolrStore implements MetadataStore {
     }
 
     @Override
-    public void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+    public void saveMetadata(List<? extends NexusTile> nexusTiles) {
 
         List<SolrInputDocument> solrdocs = nexusTiles.stream()
                 .map(nexusTile -> getSolrDocFromTileSummary(nexusTile.getSummary()))
@@ -48,7 +49,7 @@ public class SolrStore implements MetadataStore {
     }
 
     @Override
-    public void deleteMetadata(List<? extends NexusContent.NexusTile> nexusTiles) {
+    public void deleteMetadata(List<? extends NexusTile> nexusTiles) {
 
         List<String> tileIds = nexusTiles.stream()
                 .map(nexusTile -> nexusTile.getSummary().getDatasetName() + "!" + nexusTile.getSummary().getTileId())
@@ -56,10 +57,10 @@ public class SolrStore implements MetadataStore {
         solr.deleteById(this.collection, tileIds);
     }
 
-    public SolrInputDocument getSolrDocFromTileSummary(NexusContent.TileSummary summary) {
+    public SolrInputDocument getSolrDocFromTileSummary(TileSummary summary) {
 
-        NexusContent.TileSummary.BBox bbox = summary.getBbox();
-        NexusContent.TileSummary.DataStats stats = summary.getStats();
+        TileSummary.BBox bbox = summary.getBbox();
+        TileSummary.DataStats stats = summary.getStats();
 
         Calendar startCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         startCal.setTime(new Date(stats.getMinTime() * 1000));
@@ -100,7 +101,7 @@ public class SolrStore implements MetadataStore {
         return inputDocument;
     }
 
-    private String determineGeo(NexusContent.TileSummary summary) {
+    private String determineGeo(TileSummary summary) {
         //Solr cannot index a POLYGON where all corners are the same point or when there are only 2 distinct points (line).
         //Solr is configured for a specific precision so we need to round to that precision before checking equality.
         Integer geoPrecision = this.geoPrecision;

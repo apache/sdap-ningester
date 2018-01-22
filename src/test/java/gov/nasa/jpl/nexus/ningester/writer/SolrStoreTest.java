@@ -5,9 +5,9 @@
 
 package gov.nasa.jpl.nexus.ningester.writer;
 
+import org.apache.sdap.nexusproto.TileSummary;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.Test;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,9 +17,9 @@ public class SolrStoreTest {
     public void testGetSolrDocFromTileSummary() {
         SolrStore solrStore = new SolrStore(null);
 
-        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
+        TileSummary tileSummary = TileSummary.newBuilder()
                 .setTileId("1")
-                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+                .setBbox(TileSummary.BBox.newBuilder()
                         .setLatMin(51)
                         .setLatMax(55)
                         .setLonMin(22)
@@ -30,7 +30,7 @@ public class SolrStoreTest {
                 .setDataVarName("sst")
                 .setGranule("test.nc")
                 .setSectionSpec("0:1,0:1")
-                .setStats(NexusContent.TileSummary.DataStats.newBuilder()
+                .setStats(TileSummary.DataStats.newBuilder()
                         .setCount(10)
                         .setMax(50)
                         .setMin(50)
@@ -67,8 +67,8 @@ public class SolrStoreTest {
     public void testGeoIsPointWhenLatMinMaxEqualAndLonMinMaxEqual() {
         SolrStore solrStore = new SolrStore(null);
 
-        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
-                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+        TileSummary tileSummary = TileSummary.newBuilder()
+                .setBbox(TileSummary.BBox.newBuilder()
                         .setLatMin(51)
                         .setLatMax(51)
                         .setLonMin(22)
@@ -85,8 +85,8 @@ public class SolrStoreTest {
     public void testGeoIsLineStringWhenLatMinMaxEqualAndLonMinMaxNotEqual() {
         SolrStore solrStore = new SolrStore(null);
 
-        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
-                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+        TileSummary tileSummary = TileSummary.newBuilder()
+                .setBbox(TileSummary.BBox.newBuilder()
                         .setLatMin(51)
                         .setLatMax(51)
                         .setLonMin(22)
@@ -103,8 +103,8 @@ public class SolrStoreTest {
     public void testGeoIsLineStringWhenLatMinMaxNotEqualAndLonMinMaxEqual() {
         SolrStore solrStore = new SolrStore(null);
 
-        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
-                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+        TileSummary tileSummary = TileSummary.newBuilder()
+                .setBbox(TileSummary.BBox.newBuilder()
                         .setLatMin(51)
                         .setLatMax(59)
                         .setLonMin(22)
@@ -121,8 +121,8 @@ public class SolrStoreTest {
     public void testGeoIsLineStringWhenLatMinMaxAlmostEqualAndLonMinMaxNotEqual() {
         SolrStore solrStore = new SolrStore(null);
 
-        NexusContent.TileSummary tileSummary = NexusContent.TileSummary.newBuilder()
-                .setBbox(NexusContent.TileSummary.BBox.newBuilder()
+        TileSummary tileSummary = TileSummary.newBuilder()
+                .setBbox(TileSummary.BBox.newBuilder()
                         .setLatMin(-56.135883f)
                         .setLatMax(-56.135674f)
                         .setLonMin(-9.229431f)

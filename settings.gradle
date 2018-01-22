@@ -2,7 +2,7 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.name?.startsWith('propdeps')) {
-                useModule('io.spring.gradle:propdeps-plugin:0.0.9.RELEASE')
+                useModule("io.spring.gradle:propdeps-plugin:${requested.version}")
             }
         }
     }

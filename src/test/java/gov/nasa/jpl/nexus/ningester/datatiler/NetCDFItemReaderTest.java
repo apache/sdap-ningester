@@ -1,7 +1,7 @@
 package gov.nasa.jpl.nexus.ningester.datatiler;
 
+import org.apache.sdap.nexusproto.NexusTile;
 import org.junit.Test;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -44,7 +44,7 @@ public class NetCDFItemReaderTest {
         ExecutionContext context = new ExecutionContext();
         reader.open(context);
 
-        NexusContent.NexusTile result = reader.read();
+        NexusTile result = reader.read();
 
         assertThat(result.getSummary().getSectionSpec(), is("lat:0:10,lon:0:20"));
         assertThat(result.getSummary().getGranule(), is(testResource.getURL().toString()));
@@ -67,8 +67,8 @@ public class NetCDFItemReaderTest {
         ExecutionContext context = new ExecutionContext();
         reader.open(context);
 
-        List<NexusContent.NexusTile> results = new ArrayList<>();
-        NexusContent.NexusTile result;
+        List<NexusTile> results = new ArrayList<>();
+        NexusTile result;
         while ((result = reader.read()) != null) {
             results.add(result);
         }

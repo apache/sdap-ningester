@@ -9,7 +9,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ public class DynamoStore implements DataStore {
         this.primaryKey = primaryKey;
     }
 
-    public void saveData(List<? extends NexusContent.NexusTile> nexusTiles) {
+    public void saveData(List<? extends NexusTile> nexusTiles) {
 
         Table table = dynamoDB.getTable(tableName);
 
-        for (NexusContent.NexusTile tile : nexusTiles) {
+        for (NexusTile tile : nexusTiles) {
             String tileId = getTileId(tile);
             byte[] tileData = getTileData(tile);
 
@@ -44,11 +44,11 @@ public class DynamoStore implements DataStore {
         }
     }
 
-    private String getTileId(NexusContent.NexusTile tile) {
+    private String getTileId(NexusTile tile) {
         return tile.getTile().getTileId();
     }
 
-    private byte[] getTileData(NexusContent.NexusTile tile) {
+    private byte[] getTileData(NexusTile tile) {
         return tile.getTile().toByteArray();
     }
 }

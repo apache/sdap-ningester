@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import gov.nasa.jpl.nexus.ningester.processors.properties.PythonProcessorModule;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,7 +32,7 @@ public class PythonChainProcessor {
         this.restTemplate = restTemplate;
     }
 
-    public NexusContent.NexusTile nexusTileProcessor(NexusContent.NexusTile nexusTile) {
+    public NexusTile nexusTileProcessor(NexusTile nexusTile) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
@@ -52,7 +52,7 @@ public class PythonChainProcessor {
                 uriPath,
                 HttpMethod.POST,
                 requestEntity,
-                NexusContent.NexusTile.class).getBody();
+                NexusTile.class).getBody();
     }
 
     public void setProcessorList(List<PythonProcessorModule> processorList) {

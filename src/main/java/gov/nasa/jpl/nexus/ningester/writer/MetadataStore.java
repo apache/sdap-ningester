@@ -5,13 +5,13 @@
 
 package gov.nasa.jpl.nexus.ningester.writer;
 
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 
 import java.util.List;
 
 public interface MetadataStore {
 
-    void saveMetadata(List<? extends NexusContent.NexusTile> nexusTiles);
+    void saveMetadata(List<? extends NexusTile> nexusTiles);
 
-    void deleteMetadata(List<? extends NexusContent.NexusTile> nexusTiles);
+    void deleteMetadata(List<? extends NexusTile> nexusTiles);
 }

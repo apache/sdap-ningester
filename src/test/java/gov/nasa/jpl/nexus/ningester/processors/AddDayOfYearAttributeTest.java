@@ -5,10 +5,11 @@
 
 package gov.nasa.jpl.nexus.ningester.processors;
 
+import org.apache.sdap.nexusproto.NexusTile;
+import org.apache.sdap.nexusproto.TileSummary;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,15 +25,15 @@ public class AddDayOfYearAttributeTest {
     public void testSuccessfulMatch() {
         String regex = "^(\\d{3})";
         String granuleName = "001.L4_5day_avhrr_clim_sst_pixelMean.nc";
-        NexusContent.NexusTile nexusTile = NexusContent.NexusTile.newBuilder().setSummary(
-                NexusContent.TileSummary.newBuilder()
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
                         .setGranule(granuleName)
                         .build()
         ).build();
 
         AddDayOfYearAttribute processor = new AddDayOfYearAttribute(regex);
 
-        NexusContent.NexusTile result = processor.setDayOfYearFromGranuleName(nexusTile);
+        NexusTile result = processor.setDayOfYearFromGranuleName(nexusTile);
 
         assertThat(result.getSummary().getGlobalAttributesList(), contains(
                 hasProperty("name", is("day_of_year_i"))
@@ -50,8 +51,8 @@ public class AddDayOfYearAttributeTest {
 
         String regex = "^(\\d{3})";
         String granuleName = "L4_5day_avhrr_clim_sst_pixelMean.nc";
-        NexusContent.NexusTile nexusTile = NexusContent.NexusTile.newBuilder().setSummary(
-                NexusContent.TileSummary.newBuilder()
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
                         .setGranule(granuleName)
                         .build()
         ).build();
@@ -69,8 +70,8 @@ public class AddDayOfYearAttributeTest {
 
         String regex = "^\\d{3}";
         String granuleName = "001.L4_5day_avhrr_clim_sst_pixelMean.nc";
-        NexusContent.NexusTile nexusTile = NexusContent.NexusTile.newBuilder().setSummary(
-                NexusContent.TileSummary.newBuilder()
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
                         .setGranule(granuleName)
                         .build()
         ).build();

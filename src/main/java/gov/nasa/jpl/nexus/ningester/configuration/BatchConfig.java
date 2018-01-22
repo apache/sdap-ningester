@@ -5,7 +5,7 @@ import gov.nasa.jpl.nexus.ningester.datatiler.FileSlicer;
 import gov.nasa.jpl.nexus.ningester.datatiler.NetCDFItemReader;
 import gov.nasa.jpl.nexus.ningester.processors.*;
 import gov.nasa.jpl.nexus.ningester.writer.NexusWriter;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -58,7 +58,7 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected ItemStreamReader<NexusContent.NexusTile> reader(FileSlicer fileSlicer, Resource granule) {
+    protected ItemStreamReader<NexusTile> reader(FileSlicer fileSlicer, Resource granule) {
         NetCDFItemReader reader = new NetCDFItemReader(fileSlicer);
         reader.setResource(granule);
         return reader;
@@ -66,21 +66,21 @@ public class BatchConfig {
 
     @Bean
     @JobScope
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> processor() {
+    protected ItemProcessor<NexusTile, NexusTile> processor() {
         return new CompositeItemProcessor<>(applicationProperties.getTileProcessors());
     }
 
     @Bean
     @JobScope
-    protected ItemWriter<NexusContent.NexusTile> writer(NexusWriter nexusWriter) {
+    protected ItemWriter<NexusTile> writer(NexusWriter nexusWriter) {
         return nexusWriter::saveToNexus;
     }
 
     @Bean
     @JobScope
-    protected Step ingestGranule(ItemStreamReader<NexusContent.NexusTile> reader, ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> processor, ItemWriter<NexusContent.NexusTile> writer) {
+    protected Step ingestGranule(ItemStreamReader<NexusTile> reader, ItemProcessor<NexusTile, NexusTile> processor, ItemWriter<NexusTile> writer) {
         return steps.get("ingestGranule")
-                .<NexusContent.NexusTile, NexusContent.NexusTile>chunk(10)
+                .<NexusTile, NexusTile>chunk(10)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer).build();
@@ -91,31 +91,31 @@ public class BatchConfig {
      */
     @Bean
     @ConditionalOnBean(AddDatasetName.class)
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDatasetName(AddDatasetName addDatasetNameBean) {
+    protected ItemProcessor<NexusTile, NexusTile> addDatasetName(AddDatasetName addDatasetNameBean) {
         return addDatasetNameBean::addDatasetName;
     }
 
     @Bean
     @ConditionalOnBean(AddDayOfYearAttribute.class)
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addDayOfYearAttribute(AddDayOfYearAttribute addDayOfYearAttributeBean) {
+    protected ItemProcessor<NexusTile, NexusTile> addDayOfYearAttribute(AddDayOfYearAttribute addDayOfYearAttributeBean) {
         return addDayOfYearAttributeBean::setDayOfYearFromGranuleName;
     }
 
     @Bean
     @ConditionalOnBean(AddTimeFromGranuleName.class)
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> addTimeFromGranuleName(AddTimeFromGranuleName addTimeFromGranuleNameBean) {
+    protected ItemProcessor<NexusTile, NexusTile> addTimeFromGranuleName(AddTimeFromGranuleName addTimeFromGranuleNameBean) {
         return addTimeFromGranuleNameBean::setTimeFromGranuleName;
     }
 
     @Bean
     @ConditionalOnBean(GenerateTileId.class)
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> generateTileId(GenerateTileId generateTileIdBean) {
+    protected ItemProcessor<NexusTile, NexusTile> generateTileId(GenerateTileId generateTileIdBean) {
         return generateTileIdBean::addTileId;
     }
 
     @Bean
     @ConditionalOnBean(PythonChainProcessor.class)
-    protected ItemProcessor<NexusContent.NexusTile, NexusContent.NexusTile> pythonChainProcessor(PythonChainProcessor pythonChainProcessorBean) {
+    protected ItemProcessor<NexusTile, NexusTile> pythonChainProcessor(PythonChainProcessor pythonChainProcessorBean) {
         return pythonChainProcessorBean::nexusTileProcessor;
     }
 

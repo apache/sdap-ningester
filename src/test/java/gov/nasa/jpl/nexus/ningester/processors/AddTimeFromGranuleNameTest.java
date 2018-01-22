@@ -4,10 +4,13 @@
  *****************************************************************************/
 package gov.nasa.jpl.nexus.ningester.processors;
 
+import org.apache.sdap.nexusproto.GridTile;
+import org.apache.sdap.nexusproto.NexusTile;
+import org.apache.sdap.nexusproto.TileData;
+import org.apache.sdap.nexusproto.TileSummary;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 import java.text.ParseException;
 
@@ -29,14 +32,14 @@ public class AddTimeFromGranuleNameTest {
 
         String granuleName = "A2012001.L3m_DAY_NSST_sst_4km.nc";
         Long expectedTime = 1325376000L; // 01/01/2012 00:00:00 in epoch time
-        NexusContent.NexusTile nexusTile = NexusContent.NexusTile.newBuilder().setSummary(
-                NexusContent.TileSummary.newBuilder()
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
                         .setGranule(granuleName)
                         .build()
         ).setTile(
-                NexusContent.TileData.newBuilder()
+                TileData.newBuilder()
                         .setGridTile(
-                                NexusContent.GridTile.newBuilder(
+                                GridTile.newBuilder(
 
                                 ).build()
                         ).build()
@@ -44,7 +47,7 @@ public class AddTimeFromGranuleNameTest {
 
         AddTimeFromGranuleName processor = new AddTimeFromGranuleName(regex, dateFormat);
 
-        NexusContent.NexusTile result = processor.setTimeFromGranuleName(nexusTile);
+        NexusTile result = processor.setTimeFromGranuleName(nexusTile);
 
         assertThat(result.getTile().getGridTile().getTime(), is(expectedTime));
         assertThat(result.getSummary().getStats().getMinTime(), is(expectedTime));
@@ -61,14 +64,14 @@ public class AddTimeFromGranuleNameTest {
         thrown.expect(RuntimeException.class);
         thrown.expectCause(isA(ParseException.class));
 
-        NexusContent.NexusTile nexusTile = NexusContent.NexusTile.newBuilder().setSummary(
-                NexusContent.TileSummary.newBuilder()
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
                         .setGranule(granuleName)
                         .build()
         ).setTile(
-                NexusContent.TileData.newBuilder()
+                TileData.newBuilder()
                         .setGridTile(
-                                NexusContent.GridTile.newBuilder(
+                                GridTile.newBuilder(
 
                                 ).build()
                         ).build()
@@ -76,7 +79,7 @@ public class AddTimeFromGranuleNameTest {
 
         AddTimeFromGranuleName processor = new AddTimeFromGranuleName(regex, dateFormat);
 
-        NexusContent.NexusTile result = processor.setTimeFromGranuleName(nexusTile);
+        NexusTile result = processor.setTimeFromGranuleName(nexusTile);
 
     }
 }

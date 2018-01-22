@@ -5,8 +5,9 @@
 
 package gov.nasa.jpl.nexus.ningester.processors;
 
+import org.apache.sdap.nexusproto.NexusTile;
+import org.apache.sdap.nexusproto.TileData;
 import org.junit.Test;
-import org.nasa.jpl.nexus.ingest.wiretypes.NexusContent;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,14 +23,14 @@ public class GenerateTileIdTest {
 
         String expectedId = "c031a9c4-9e1d-32e9-9d5c-d2497ce74920";
 
-        NexusContent.NexusTile.Builder inputTileBuilder = NexusContent.NexusTile.newBuilder();
+        NexusTile.Builder inputTileBuilder = NexusTile.newBuilder();
         inputTileBuilder.getSummaryBuilder().setGranule(granuleFileName);
         inputTileBuilder.getSummaryBuilder().setSectionSpec(sectionSpec);
-        inputTileBuilder.setTile(NexusContent.TileData.newBuilder());
+        inputTileBuilder.setTile(TileData.newBuilder());
 
         GenerateTileId processor = new GenerateTileId();
 
-        NexusContent.NexusTile result = processor.addTileId(inputTileBuilder.build());
+        NexusTile result = processor.addTileId(inputTileBuilder.build());
 
         assertThat(result.getSummary().getTileId(), is(expectedId));
         assertThat(result.getTile().getTileId(), is(expectedId));
@@ -45,15 +46,15 @@ public class GenerateTileIdTest {
 
         String expectedId = "48da50ef-e92c-3562-89f9-470561a06482";
 
-        NexusContent.NexusTile.Builder inputTileBuilder = NexusContent.NexusTile.newBuilder();
+        NexusTile.Builder inputTileBuilder = NexusTile.newBuilder();
         inputTileBuilder.getSummaryBuilder().setGranule(granuleFileName);
         inputTileBuilder.getSummaryBuilder().setSectionSpec(sectionSpec);
-        inputTileBuilder.setTile(NexusContent.TileData.newBuilder());
+        inputTileBuilder.setTile(TileData.newBuilder());
 
         GenerateTileId processor = new GenerateTileId();
         processor.setSalt(salt);
 
-        NexusContent.NexusTile result = processor.addTileId(inputTileBuilder.build());
+        NexusTile result = processor.addTileId(inputTileBuilder.build());
 
         assertThat(result.getSummary().getTileId(), is(expectedId));
         assertThat(result.getTile().getTileId(), is(expectedId));
