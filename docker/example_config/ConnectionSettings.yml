@@ -1,0 +1,22 @@
+---
+# Connection settings for the dockermachost profile
+spring:
+    profiles:
+      - dockermachost
+    data:
+      cassandra:
+        keyspaceName: nexustiles
+        contactPoints: docker.for.mac.localhost
+      solr:
+        host: http://docker.for.mac.localhost:8983/solr/
+
+ningester:
+  pythonChainProcessor:
+    base_url: http://127.0.0.1:5000/
+    uri_path: processorchain
+
+datasource:
+  solrStore:
+    commitWithin: 1500
+    geoPrecision: 3
+    collection: nexustiles
