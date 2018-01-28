@@ -2,7 +2,7 @@
 ningester:
     tile_slicer: sliceFileByTilesDesired
     sliceFileByTilesDesired:
-      tilesDesired: 5184
+      tilesDesired: 1296
       timeDimension: time
       dimensions:
         - lat

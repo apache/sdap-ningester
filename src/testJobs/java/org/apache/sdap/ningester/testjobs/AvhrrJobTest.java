@@ -77,18 +77,18 @@ public class AvhrrJobTest {
 
         assertThat(jobExecution.getExitStatus().getExitCode(), is("COMPLETED"));
         StepExecution stepExecution = jobExecution.getStepExecutions().iterator().next();
-        assertThat(stepExecution.getReadCount(), is(5184));
-        assertThat(stepExecution.getWriteCount(), is(3904));
-        assertThat(stepExecution.getFilterCount(), is(1280));
+        assertThat(stepExecution.getReadCount(), is(1296));
+        assertThat(stepExecution.getWriteCount(), is(1053));
+        assertThat(stepExecution.getFilterCount(), is(243));
 
-        assertEqualsEventually(3904L,
+        assertEqualsEventually(1053L,
                 () -> solrTemplate.count(datasourceProperties.getSolrStore().getCollection(),
                         new SimpleQuery("dataset_s: " + applicationProperties.getAddDatasetName().getDatasetName())),
                 3);
 
         long cassandraCount = cassandraTemplate.count(datasourceProperties.getCassandraStore().getTableName());
 
-        assertThat(cassandraCount, is(3904L));
+        assertThat(cassandraCount, is(1053L));
     }
 
     @TestConfiguration
