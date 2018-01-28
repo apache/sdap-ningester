@@ -21,6 +21,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.s3.AmazonS3Client;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.apache.sdap.ningester.configuration.properties.DatasourceProperties;
 import org.apache.sdap.ningester.writer.*;
 import org.apache.solr.client.solrj.SolrClient;
@@ -39,9 +40,31 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Configuration
 public class DatasourceConfig {
+
+    @Bean
+    @Profile("default")
+    public MetadataStore metadataStore() {
+        return new MetadataStore() {
+            @Override
+            public void saveMetadata(List<? extends NexusTile> nexusTiles) {
+            }
+
+            @Override
+            public void deleteMetadata(List<? extends NexusTile> nexusTiles) {
+            }
+        };
+    }
+
+    @Bean
+    @Profile("default")
+    public DataStore dataStore() {
+        return nexusTiles -> {
+        };
+    }
 
     @Bean
     @Profile("embedded")

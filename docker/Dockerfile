@@ -17,15 +17,6 @@ FROM openjdk:8-jdk
 
 MAINTAINER dev@sdap.apache.org
 
-ARG APACHE_NEXUSPROTO=https://github.com/apache/incubator-sdap-nexusproto.git
-ARG APACHE_NEXUSPROTO_BRANCH=master
-
-ARG APACHE_NINGESTERPY=https://github.com/apache/incubator-sdap-ningesterpy.git
-ARG APACHE_NINGESTERPY_BRANCH=master
-
-ARG APACHE_NINGESTER=https://github.com/apache/incubator-sdap-ningester.git
-ARG APACHE_NINGESTER_BRANCH=master
-
 RUN apt-get update && apt-get install -y \
     bzip2 \
     git \
@@ -49,23 +40,27 @@ RUN wget -q https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.s
 ENV PATH /usr/local/anaconda2/bin:$PATH
 
 
-COPY --chown=ningester:ningester *.sh ./
-
 # Install nexusproto
+ARG APACHE_NEXUSPROTO=https://github.com/apache/incubator-sdap-nexusproto.git
+ARG APACHE_NEXUSPROTO_BRANCH=master
+COPY --chown=ningester:ningester install_nexusproto.sh ./install_nexusproto.sh
 RUN ./install_nexusproto.sh $APACHE_NEXUSPROTO $APACHE_NEXUSPROTO_BRANCH
 
 # Install ningesterpy
-#COPY --chown=ningester:ningester install_ningesterpy.sh ./install_ningesterpy.sh
+ARG APACHE_NINGESTERPY=https://github.com/apache/incubator-sdap-ningesterpy.git
+ARG APACHE_NINGESTERPY_BRANCH=master
+COPY --chown=ningester:ningester install_ningesterpy.sh ./install_ningesterpy.sh
 RUN ./install_ningesterpy.sh $APACHE_NINGESTERPY $APACHE_NINGESTERPY_BRANCH
 
 # Install ningester
-#COPY --chown=ningester:ningester install_ningester.sh ./install_ningester.sh
+ARG APACHE_NINGESTER=https://github.com/apache/incubator-sdap-ningester.git
+ARG APACHE_NINGESTER_BRANCH=master
+COPY --chown=ningester:ningester install_ningester.sh ./install_ningester.sh
 RUN ./install_ningester.sh $APACHE_NINGESTER $APACHE_NINGESTER_BRANCH && \
   export NINGESTER_JAR=`find ningester/build/libs -name ningester*.jar`
 
 VOLUME /data
 VOLUME /config
 
-#COPY --chown=ningester:ningester entrypoint.sh ./entrypoint.sh
-
+COPY --chown=ningester:ningester entrypoint.sh ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]

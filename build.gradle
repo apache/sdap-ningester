@@ -35,7 +35,7 @@ repositories {
 }
 
 ext{
-	nexusprotoVersion = "1.0.1-SNAPSHOT"
+	nexusprotoVersion = "1.0.0-SNAPSHOT"
 	protobufUtilVersion = "3.5.1"
 	netcdfJavaVersion = '4.6.9'
 	guavaVersion = "23.2-jre"
