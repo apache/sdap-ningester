@@ -99,25 +99,6 @@ public class AppConfig {
     }
 
     @Bean
-    public MetadataStore metadataStore() {
-        return new MetadataStore() {
-            @Override
-            public void saveMetadata(List<? extends NexusTile> nexusTiles) {
-            }
-
-            @Override
-            public void deleteMetadata(List<? extends NexusTile> nexusTiles) {
-            }
-        };
-    }
-
-    @Bean
-    public DataStore dataStore() {
-        return nexusTiles -> {
-        };
-    }
-
-    @Bean
     public NexusWriter nexusWriter(MetadataStore metadataStore, DataStore dataStore) {
         return new NexusWriter(metadataStore, dataStore);
     }

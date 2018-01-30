@@ -21,9 +21,12 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.s3.AmazonS3Client;
+import org.apache.sdap.nexusproto.NexusTile;
 import org.apache.sdap.ningester.configuration.properties.DatasourceProperties;
 import org.apache.sdap.ningester.writer.*;
 import org.apache.solr.client.solrj.SolrClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
@@ -39,9 +42,35 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Configuration
 public class DatasourceConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(DatasourceConfig.class);
+
+    @Bean
+    @Profile("default")
+    public MetadataStore metadataStore() {
+        log.warn("Default metadataStore configured. All tiles generated will not be saved to persistent storage! Enable a profile to configure metadata storage (e.g. activating the 'solr' profile will save metadata to Solr)");
+        return new MetadataStore() {
+            @Override
+            public void saveMetadata(List<? extends NexusTile> nexusTiles) {
+            }
+
+            @Override
+            public void deleteMetadata(List<? extends NexusTile> nexusTiles) {
+            }
+        };
+    }
+
+    @Bean
+    @Profile("default")
+    public DataStore dataStore() {
+        log.warn("Default dataStore configured. All tiles generated will not be saved to persistent storage! Enable a profile to configure data storage (e.g. activating the 'cassandra' profile will save metadata to Solr)");
+        return nexusTiles -> {
+        };
+    }
 
     @Bean
     @Profile("embedded")
