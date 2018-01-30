@@ -1,3 +1,4 @@
+# By default, do not try to auto-configure Cassandra and Solr. Only try to configure if the solr and/or cassandra profiles are enabled.
 spring:
   profiles: default
   autoconfigure:
@@ -6,4 +7,21 @@ spring:
       - org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration
       - org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration
 
+---
 
+# This should not change in 99% of cases. The python process is currently designed to run on the same host, in the same container as the java process.
+ningester:
+  pythonChainProcessor:
+    base_url: http://127.0.0.1:5000/
+    uri_path: processorchain
+
+---
+
+# Sensible defaults for Solr settings.
+spring:
+  profiles: solr
+
+datasource:
+  solrStore:
+    commitWithin: 1500
+    geoPrecision: 3

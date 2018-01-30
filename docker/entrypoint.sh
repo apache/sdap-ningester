@@ -3,7 +3,7 @@ set -e
 
 NINGESTER_JAR=`find ningester/build/libs -name ningester*.jar`
 CONFIG_FILES=`find /config -name "*.yml" | awk -vORS=, '{ print $1 }'`
-GRANULE=`find /data -type f`
+GRANULE=`find /data -type f -print -quit`
 
 python -m sdap.ningesterpy 2>&1 | sed "s/^/[ningesterpy] /" &
 
