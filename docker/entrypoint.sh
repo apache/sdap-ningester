@@ -7,4 +7,4 @@ GRANULE=`find /data -type f -print -quit`
 
 python -m sdap.ningesterpy 2>&1 | sed "s/^/[ningesterpy] /" &
 
-java -Dspring.profiles.active=$1 -Dspring.config.location=${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:2} | sed "s/^/[ningester] /"
+java -Dspring.profiles.active=$1 -Dspring.config.location=classpath:/application.yml,${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:2} | sed "s/^/[ningester] /"
