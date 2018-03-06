@@ -188,5 +188,29 @@ public class SliceFileByTilesDesiredTest {
 
         assertThat(results.size(), is(expectedTiles));
 
+        assertThat(results.get(0), is("time:0:1,latitude:0:38,longitude:0:87"));
+        assertThat(results.get(results.size() - 1), is("time:3:4,latitude:608:628,longitude:1392:1440"));
+
+    }
+
+    @Test
+    public void testDimensionsOrderedByInput() throws IOException {
+        Integer tilesDesired = 270;
+        Integer expectedTiles = 289 * 4; // 4 time slices and 289 tiles per time slice
+
+        SliceFileByTilesDesired slicer = new SliceFileByTilesDesired();
+        slicer.setTilesDesired(tilesDesired);
+        slicer.setDimensions(Arrays.asList("longitude", "latitude"));
+        slicer.setTimeDimension("time");
+
+        Resource testResource = new ClassPathResource("granules/CCMP_Wind_Analysis_20050101_V02.0_L3.0_RSS.nc");
+
+        List<String> results = slicer.generateSlices(testResource.getFile());
+
+        assertThat(results.size(), is(expectedTiles));
+
+        assertThat(results.get(0), is("time:0:1,longitude:0:87,latitude:0:38"));
+        assertThat(results.get(results.size() - 1), is("time:3:4,longitude:1392:1440,latitude:608:628"));
+
     }
 }

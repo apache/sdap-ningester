@@ -1,0 +1,59 @@
+# Tile Slicer Config
+ningester:
+    tile_slicer: sliceFileByStepSize
+    sliceFileByStepSize:
+      dimensionToStepSize:
+        time: 5832
+        rivid: 1
+
+---
+# Tile processors configuration
+ningester:
+    tile_processors:
+      - pythonChainProcessor
+      - generateTileId
+      - addDatasetName
+    pythonChainProcessor:
+      enabled:
+      processor_list:
+        -
+          name: TimeSeriesReadingProcessor
+          config:
+            latitude: lat
+            longitude: lon
+            time: time
+            variable_to_read: Qout
+            xarray: True
+        -
+          name: EmptyTileFilter
+        -
+          name: TileSummarizingProcessor
+          config:
+            stored_var_name: Qout
+    generateTileId:
+      enabled:
+    addDatasetName:
+      enabled:
+      datasetName: RAPID_WSWM_SWOT
+---
+# Tile writer configuration
+ningester:
+  tile_writer:
+    data_store: cassandraStore
+    metadata_store: solrStore
+---
+# Connection settings for the test profile
+spring:
+    profiles:
+      - test
+      - local
+    data:
+      cassandra:
+        keyspaceName: nexustiles
+        contactPoints: 127.0.0.1
+      solr:
+        host: http://127.0.0.1:8983/solr/
+
+datasource:
+  solrStore:
+    collection: nexustiles

@@ -22,6 +22,7 @@ import org.apache.sdap.nexusproto.NexusTile;
 import org.apache.sdap.ningester.configuration.properties.ApplicationProperties;
 import org.apache.sdap.ningester.datatiler.FileSlicer;
 import org.apache.sdap.ningester.datatiler.SliceFileByDimension;
+import org.apache.sdap.ningester.datatiler.SliceFileByStepSize;
 import org.apache.sdap.ningester.datatiler.SliceFileByTilesDesired;
 import org.apache.sdap.ningester.http.NexusTileConverter;
 import org.apache.sdap.ningester.processors.*;
@@ -73,6 +74,13 @@ public class AppConfig {
         fileSlicer.setSliceByDimension(applicationProperties.getSliceFileByDimension().getSliceByDimension());
         fileSlicer.setDimensionNamePrefix(applicationProperties.getSliceFileByDimension().getDimensionNamePrefix());
         return fileSlicer;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "ningester", name = "tile_slicer", havingValue = "sliceFileByStepSize")
+    @Qualifier("fileSlicer")
+    protected FileSlicer sliceFileByStepSize() {
+        return new SliceFileByStepSize(applicationProperties.getSliceFileByStepSize().getDimensionToStepSize());
     }
 
     @Bean
