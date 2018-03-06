@@ -18,6 +18,7 @@
 
 package org.apache.sdap.ningester.configuration.properties;
 
+import org.apache.sdap.ningester.datatiler.properties.SliceFileByStepSize;
 import org.apache.sdap.ningester.datatiler.properties.SliceFileByDimension;
 import org.apache.sdap.ningester.datatiler.properties.SliceFileByTilesDesired;
 import org.apache.sdap.ningester.processors.properties.*;
@@ -36,6 +37,8 @@ public class ApplicationProperties {
     private final SliceFileByDimension sliceFileByDimension = new SliceFileByDimension();
     @NestedConfigurationProperty
     private final SliceFileByTilesDesired sliceFileByTilesDesired = new SliceFileByTilesDesired();
+    @NestedConfigurationProperty
+    private final SliceFileByStepSize sliceFileByStepSize = new SliceFileByStepSize();
     @NestedConfigurationProperty
     private final AddDayOfYearAttribute addDayOfYearAttribute = new AddDayOfYearAttribute();
     @NestedConfigurationProperty
@@ -87,5 +90,9 @@ public class ApplicationProperties {
 
     public SliceFileByDimension getSliceFileByDimension() {
         return sliceFileByDimension;
+    }
+
+    public SliceFileByStepSize getSliceFileByStepSize() {
+        return sliceFileByStepSize;
     }
 }

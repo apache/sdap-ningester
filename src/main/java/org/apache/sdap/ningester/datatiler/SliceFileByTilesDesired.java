@@ -51,11 +51,12 @@ public class SliceFileByTilesDesired implements FileSlicer {
 
             dimensionNameToLength = ds.getDimensions().stream()
                     .filter(dimension -> this.dimensions.contains(dimension.getShortName()))
+                    .sorted(Comparator.comparing(Dimension::getShortName, Comparator.comparingInt(dim -> this.dimensions.indexOf(dim))))
                     .collect(Collectors.toMap(Dimension::getShortName, Dimension::getLength,
                             (v1, v2) -> {
                                 throw new RuntimeException(String.format("Duplicate key for values %s and %s", v1, v2));
                             },
-                            TreeMap::new));
+                            LinkedHashMap::new));
 
             if (this.timeDimension != null) {
                 timeLen = ds.getDimensions().stream()
