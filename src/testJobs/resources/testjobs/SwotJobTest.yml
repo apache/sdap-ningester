@@ -27,6 +27,12 @@ ningester:
         -
           name: EmptyTileFilter
         -
+          name: PromoteVariableToGlobalAttribute
+          config:
+            attribute_name: rivid_i
+            variable_name: rivid
+            dimensioned_by: [rivid]
+        -
           name: TileSummarizingProcessor
           config:
             stored_var_name: Qout
