@@ -17,6 +17,7 @@
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-configuration-processor:1.5.9.RELEASE" level="project" />
     <orderEntry type="module" module-name="ningester_main" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.vaadin.external.google:android-json:0.0.20131108.vaadin1" level="project" />
+    <orderEntry type="module" module-name="ningester_test" production-on-test="" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-batch:1.5.9.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-web:4.3.13.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.data:spring-data-cassandra:1.5.9.RELEASE" level="project" />
