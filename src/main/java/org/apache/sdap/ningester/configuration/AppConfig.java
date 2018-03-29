@@ -18,10 +18,10 @@
 
 package org.apache.sdap.ningester.configuration;
 
-import org.apache.sdap.nexusproto.NexusTile;
 import org.apache.sdap.ningester.configuration.properties.ApplicationProperties;
 import org.apache.sdap.ningester.datatiler.FileSlicer;
 import org.apache.sdap.ningester.datatiler.SliceFileByDimension;
+import org.apache.sdap.ningester.datatiler.SliceFileByStepSize;
 import org.apache.sdap.ningester.datatiler.SliceFileByTilesDesired;
 import org.apache.sdap.ningester.http.NexusTileConverter;
 import org.apache.sdap.ningester.processors.*;
@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
+@Order(1)
 @EnableConfigurationProperties({ApplicationProperties.class})
 public class AppConfig {
 
@@ -73,6 +75,13 @@ public class AppConfig {
         fileSlicer.setSliceByDimension(applicationProperties.getSliceFileByDimension().getSliceByDimension());
         fileSlicer.setDimensionNamePrefix(applicationProperties.getSliceFileByDimension().getDimensionNamePrefix());
         return fileSlicer;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "ningester", name = "tile_slicer", havingValue = "sliceFileByStepSize")
+    @Qualifier("fileSlicer")
+    protected FileSlicer sliceFileByStepSize() {
+        return new SliceFileByStepSize(applicationProperties.getSliceFileByStepSize().getDimensionToStepSize());
     }
 
     @Bean
