@@ -20,6 +20,7 @@ MAINTAINER dev@sdap.apache.org
 RUN apt-get update && apt-get install -y \
     bzip2 \
     git \
+    gcc \
     python3 \
     wget && \
     addgroup ningester && \
@@ -33,7 +34,7 @@ WORKDIR /tmp
 # ########################
 # # Anaconda   #
 # ########################
-RUN wget -q https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O install_anaconda.sh && \
+RUN wget -q https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.sh -O install_anaconda.sh && \
     /bin/bash install_anaconda.sh -b -p /usr/local/anaconda2 && \
     rm install_anaconda.sh && \
     /usr/local/anaconda2/bin/conda config --add channels conda-forge
