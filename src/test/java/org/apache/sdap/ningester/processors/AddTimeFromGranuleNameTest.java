@@ -43,8 +43,37 @@ public class AddTimeFromGranuleNameTest {
         String regex = "^.*(\\d{7})\\.";
         String dateFormat = "yyyyDDD";
 
-        String granuleName = "A2012001.L3m_DAY_NSST_sst_4km.nc";
+        String granuleName = "file:/some/path/A2012001.L3m_DAY_NSST_sst_4km.nc";
         Long expectedTime = 1325376000L; // 01/01/2012 00:00:00 in epoch time
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
+                        .setGranule(granuleName)
+                        .build()
+        ).setTile(
+                TileData.newBuilder()
+                        .setGridTile(
+                                GridTile.newBuilder(
+
+                                ).build()
+                        ).build()
+        ).build();
+
+        AddTimeFromGranuleName processor = new AddTimeFromGranuleName(regex, dateFormat);
+
+        NexusTile result = processor.setTimeFromGranuleName(nexusTile);
+
+        assertThat(result.getTile().getGridTile().getTime(), is(expectedTime));
+        assertThat(result.getSummary().getStats().getMinTime(), is(expectedTime));
+        assertThat(result.getSummary().getStats().getMaxTime(), is(expectedTime));
+    }
+
+    @Test
+    public void testSuccessfulMatchAvhrr() {
+        String regex = "^.*(\\d{3})\\.";
+        String dateFormat = "DDD";
+
+        String granuleName = "file:/some/path/005.L4_5day_avhrr_clim_sst_pixelMean.nc";
+        Long expectedTime = 345600L; // 01/05/1979 00:00:00 in epoch time
         NexusTile nexusTile = NexusTile.newBuilder().setSummary(
                 TileSummary.newBuilder()
                         .setGranule(granuleName)
