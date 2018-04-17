@@ -36,8 +36,8 @@ public class AddDayOfYearAttributeTest {
 
     @Test
     public void testSuccessfulMatch() {
-        String regex = "^(\\d{3})";
-        String granuleName = "001.L4_5day_avhrr_clim_sst_pixelMean.nc";
+        String regex = "^.*(\\d{3})";
+        String granuleName = "file:/some/path/001.L4_5day_avhrr_clim_sst_pixelMean.nc";
         NexusTile nexusTile = NexusTile.newBuilder().setSummary(
                 TileSummary.newBuilder()
                         .setGranule(granuleName)
