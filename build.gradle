@@ -60,6 +60,7 @@ dependencies {
 	compile("org.springframework.data:spring-data-solr")
 
 	compile("com.h2database:h2")
+	compile("mysql:mysql-connector-java")
 	compile("org.apache.sdap:nexusproto:$nexusprotoVersion")
 	compile("com.google.protobuf:protobuf-java-util:$protobufUtilVersion")
 
