@@ -38,13 +38,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 @Configuration
-@Order(2)
 @EnableBatchProcessing
 @Import(AppConfig.class)
 public class BatchConfig {
@@ -109,30 +108,35 @@ public class BatchConfig {
      */
     @Bean
     @ConditionalOnBean(AddDatasetName.class)
+    @DependsOn("addDatasetNameBean")
     protected ItemProcessor<NexusTile, NexusTile> addDatasetName(AddDatasetName addDatasetNameBean) {
         return addDatasetNameBean::addDatasetName;
     }
 
     @Bean
     @ConditionalOnBean(AddDayOfYearAttribute.class)
+    @DependsOn("addDayOfYearAttributeBean")
     protected ItemProcessor<NexusTile, NexusTile> addDayOfYearAttribute(AddDayOfYearAttribute addDayOfYearAttributeBean) {
         return addDayOfYearAttributeBean::setDayOfYearFromGranuleName;
     }
 
     @Bean
     @ConditionalOnBean(AddTimeFromGranuleName.class)
+    @DependsOn("addTimeFromGranuleNameBean")
     protected ItemProcessor<NexusTile, NexusTile> addTimeFromGranuleName(AddTimeFromGranuleName addTimeFromGranuleNameBean) {
         return addTimeFromGranuleNameBean::setTimeFromGranuleName;
     }
 
     @Bean
     @ConditionalOnBean(GenerateTileId.class)
+    @DependsOn("generateTileIdBean")
     protected ItemProcessor<NexusTile, NexusTile> generateTileId(GenerateTileId generateTileIdBean) {
         return generateTileIdBean::addTileId;
     }
 
     @Bean
     @ConditionalOnBean(PythonChainProcessor.class)
+    @DependsOn("pythonChainProcessorBean")
     protected ItemProcessor<NexusTile, NexusTile> pythonChainProcessor(PythonChainProcessor pythonChainProcessorBean) {
         return pythonChainProcessorBean::nexusTileProcessor;
     }
