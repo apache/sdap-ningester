@@ -34,11 +34,10 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -107,36 +106,31 @@ public class BatchConfig {
      * Item Processor beans defined below
      */
     @Bean
-    @ConditionalOnBean(AddDatasetName.class)
-    @DependsOn("addDatasetNameBean")
+    @ConditionalOnProperty(prefix = "ningester.addDatasetName", name = "enabled")
     protected ItemProcessor<NexusTile, NexusTile> addDatasetName(AddDatasetName addDatasetNameBean) {
         return addDatasetNameBean::addDatasetName;
     }
 
     @Bean
-    @ConditionalOnBean(AddDayOfYearAttribute.class)
-    @DependsOn("addDayOfYearAttributeBean")
+    @ConditionalOnProperty(prefix = "ningester.addDayOfYearAttribute", name = "enabled")
     protected ItemProcessor<NexusTile, NexusTile> addDayOfYearAttribute(AddDayOfYearAttribute addDayOfYearAttributeBean) {
         return addDayOfYearAttributeBean::setDayOfYearFromGranuleName;
     }
 
     @Bean
-    @ConditionalOnBean(AddTimeFromGranuleName.class)
-    @DependsOn("addTimeFromGranuleNameBean")
+    @ConditionalOnProperty(prefix = "ningester.addTimeFromGranuleName", name = "enabled")
     protected ItemProcessor<NexusTile, NexusTile> addTimeFromGranuleName(AddTimeFromGranuleName addTimeFromGranuleNameBean) {
         return addTimeFromGranuleNameBean::setTimeFromGranuleName;
     }
 
     @Bean
-    @ConditionalOnBean(GenerateTileId.class)
-    @DependsOn("generateTileIdBean")
+    @ConditionalOnProperty(prefix = "ningester.generateTileId", name = "enabled")
     protected ItemProcessor<NexusTile, NexusTile> generateTileId(GenerateTileId generateTileIdBean) {
         return generateTileIdBean::addTileId;
     }
 
     @Bean
-    @ConditionalOnBean(PythonChainProcessor.class)
-    @DependsOn("pythonChainProcessorBean")
+    @ConditionalOnProperty(prefix = "ningester.pythonChainProcessor", name = "enabled")
     protected ItemProcessor<NexusTile, NexusTile> pythonChainProcessor(PythonChainProcessor pythonChainProcessorBean) {
         return pythonChainProcessorBean::nexusTileProcessor;
     }
