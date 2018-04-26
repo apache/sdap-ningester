@@ -20,7 +20,7 @@ CONFIG_FILES=`find /config -name "*.yml" | awk -vORS=, '{ print $1 }'`
 GRANULE=`find /data -type f -print -quit`
 
 echo "Launching ningesterpy. Logs from this process will be prefixed with [ningesterpy]"
-python -u -m sdap.ningesterpy 2>&1 | sed -e 's/^/[ningesterpy] /' &
+python -u -m sdap.ningesterpy 2>&1 | stdbuf -o0 sed -e 's/^/[ningesterpy] /' &
 
 until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:5000/healthcheck); do
     sleep 1
