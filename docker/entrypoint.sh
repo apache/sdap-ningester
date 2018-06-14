@@ -13,7 +13,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Exit immediately if a simple command returns non-zero exit code
+# Cause the status of terminated background jobs to be reported immediately.
 set -eb
+# With pipefail, the return status of a pipeline is "the value of the last (rightmost) command to exit with a non-zero status, or zero if all commands exit successfully"
+set -o pipefail
 
 NINGESTER_JAR=`find ningester/build/libs -name ningester*.jar`
 CONFIG_FILES=`find /config -name "*.yml" | awk -vORS=, '{ print $1 }'`

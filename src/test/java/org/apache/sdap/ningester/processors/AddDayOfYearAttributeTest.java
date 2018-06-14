@@ -75,6 +75,28 @@ public class AddDayOfYearAttributeTest {
         processor.setDayOfYearFromGranuleName(nexusTile);
     }
 
+    @Test
+    public void testSuccessfulMatchSmap() {
+        String regex = "^sss_smap_L3m_clim_doy(\\d{3}).*";
+        String granuleName = "file:/some/path/sss_smap_L3m_clim_doy227_month08_nepochs1_pixelMean.nc";
+        NexusTile nexusTile = NexusTile.newBuilder().setSummary(
+                TileSummary.newBuilder()
+                        .setGranule(granuleName)
+                        .build()
+        ).build();
+
+        AddDayOfYearAttribute processor = new AddDayOfYearAttribute(regex);
+
+        NexusTile result = processor.setDayOfYearFromGranuleName(nexusTile);
+
+        assertThat(result.getSummary().getGlobalAttributesList(), contains(
+                hasProperty("name", is("day_of_year_i"))
+        ));
+
+        String actualDayOfYear = result.getSummary().getGlobalAttributes(0).getValues(0);
+        assertThat(actualDayOfYear, is("227"));
+    }
+
     @Test()
     public void testUnsuccessfulGroupMatch() {
 
