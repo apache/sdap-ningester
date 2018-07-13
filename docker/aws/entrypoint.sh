@@ -21,11 +21,11 @@ set -ebx
 set -o pipefail
 
 NINGESTER_JAR=`find ningester/build/libs -name ningester*.jar`
+
+aws s3 cp ${1} /home/ningester/config
 CONFIG_FILES=`find /home/ningester/config -name "*.yml" | awk -vORS=, '{ print $1 }'`
 
-
-aws s3 cp ${1} /home/ningester/data
-
+aws s3 cp ${2} /home/ningester/data
 GRANULE=`find /home/ningester/data -type f -print -quit`
 
 echo "Launching ningesterpy. Logs from this process will be prefixed with [ningesterpy]"
@@ -36,5 +36,5 @@ until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:5000/hea
 done
 
 echo "Launching ningester. Logs from this process will be prefixed with [ningester]"
-java -Dspring.profiles.active=${2} -Dspring.config.location=classpath:/application.yml,${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:3} 2>&1 | sed -e 's/^/[ningester] /'
+java -Dspring.profiles.active=${3} -Dspring.config.location=classpath:/application.yml,${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:4} 2>&1 | sed -e 's/^/[ningester] /'
 
