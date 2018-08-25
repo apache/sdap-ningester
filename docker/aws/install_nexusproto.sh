@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,35 +13,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -e
 
----
-# Connection settings for the dockermachost profile
-spring:
-    profiles:
-      - dockermachost
-    data:
-      cassandra:
-        keyspaceName: nexustiles
-        contactPoints: docker.for.mac.localhost
-      solr:
-        host: http://docker.for.mac.localhost:8983/solr/
+APACHE_NEXUSPROTO="https://github.com/apache/incubator-sdap-nexusproto.git"
+MASTER="master"
 
-datasource:
-  solrStore:
-    collection: nexustiles
+GIT_REPO=${1:-$APACHE_NEXUSPROTO}
+GIT_BRANCH=${2:-$MASTER}
 
----
+mkdir nexusproto
+pushd nexusproto
+git init
+git pull ${GIT_REPO} ${GIT_BRANCH}
 
-spring:
-    profiles:
-      - local
-    data:
-      cassandra:
-        keyspaceName: nexustiles
-        contactPoints: 127.0.0.1
-      solr:
-        host: http://127.0.0.1:8983/solr/
+./gradlew pythonInstall --info
 
-datasource:
-  solrStore:
-    collection: nexustiles
+./gradlew install --info
+popd
