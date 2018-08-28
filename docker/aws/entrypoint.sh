@@ -28,13 +28,41 @@ CONFIG_FILES=`find /home/ningester/config -name "*.yml" | awk -vORS=, '{ print $
 aws s3 cp ${2} /home/ningester/data
 GRANULE=`find /home/ningester/data -type f -print -quit`
 
+export NINGESTERPY_SETTINGS=/home/ningester/ningesterpy_settings.py
+random_port=${RANDOMIZE_NINGESTERPY_PORT:="false"}
+if [ ${random_port} == "false" ]
+then
+    NINGESTER_PY_SERVER_NAME="127.0.0.1:5000"
+else
+    NINGESTERPY_PORT_FILE="/home/ningester/current_port"
+    NINGESTER_PY_SERVER_NAME="127.0.0.1:0"
+    echo "CREATE_PORT_FILE=True" >> ${NINGESTERPY_SETTINGS}
+    echo "PORT_FILE='${NINGESTERPY_PORT_FILE}'" >> ${NINGESTERPY_SETTINGS}
+fi
+echo "SERVER_NAME='${NINGESTER_PY_SERVER_NAME}'" >> ${NINGESTERPY_SETTINGS}
+
 echo "Launching ningesterpy. Logs from this process will be prefixed with [ningesterpy]"
 python -u -m sdap.ningesterpy 2>&1 | stdbuf -o0 sed -e 's/^/[ningesterpy] /' &
 
-until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:5000/healthcheck); do
+if [ ! ${random_port} == "false" ]; then
+    until [ -f "${NINGESTERPY_PORT_FILE}" ]; do
+        sleep 1
+    done
+    port=$(<${NINGESTERPY_PORT_FILE})
+    NINGESTER_PY_SERVER_NAME="127.0.0.1:${port}"
+fi
+
+NEXT_WAIT_TIME=0
+until $(curl --output /dev/null --silent --head --fail http://${NINGESTER_PY_SERVER_NAME}/healthcheck) || [ ${NEXT_WAIT_TIME} -eq 10 ]; do
+    echo "Checking http://${NINGESTER_PY_SERVER_NAME}/healthcheck"
     sleep 1
+    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME+1))
 done
+if [ ${NEXT_WAIT_TIME} -eq 10 ]; then
+    echo "Timed out waiting for ningesterpy to start" >&2
+    exit 1
+fi
 
 echo "Launching ningester. Logs from this process will be prefixed with [ningester]"
-java -Dspring.profiles.active=${3} -Dspring.config.location=classpath:/application.yml,${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:4} 2>&1 | sed -e 's/^/[ningester] /'
+java -Dspring.profiles.active=${3} -Dspring.config.location=classpath:/application.yml,${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:4} --ningester.pythonChainProcessor.base_url="http://${NINGESTER_PY_SERVER_NAME}/" 2>&1 | sed -e 's/^/[ningester] /'
 
