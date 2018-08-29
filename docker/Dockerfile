@@ -60,8 +60,14 @@ COPY --chown=ningester:ningester install_ningester.sh ./install_ningester.sh
 RUN ./install_ningester.sh $APACHE_NINGESTER $APACHE_NINGESTER_BRANCH && \
   export NINGESTER_JAR=`find ningester/build/libs -name ningester*.jar`
 
-VOLUME /data
-VOLUME /config
+RUN mkdir /home/ningester/data && \
+    mkdir /home/ningester/config && \
+    ln -s /data /home/ningester/data && \
+    ln -s /config /home/ningester/config
+
+VOLUME /home/ningester/data
+VOLUME /home/ningester/config
 
 COPY --chown=ningester:ningester entrypoint.sh ./entrypoint.sh
+
 ENTRYPOINT ["./entrypoint.sh"]
