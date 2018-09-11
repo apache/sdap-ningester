@@ -16,7 +16,7 @@
 
 # Exit immediately if a simple command returns non-zero exit code
 # Cause the status of terminated background jobs to be reported immediately.
-set -eb
+set -ebx
 # With pipefail, the return status of a pipeline is "the value of the last (rightmost) command to exit with a non-zero status, or zero if all commands exit successfully"
 set -o pipefail
 
@@ -61,4 +61,7 @@ fi
 
 echo "Launching ningester. Logs from this process will be prefixed with [ningester]"
 java -Dspring.profiles.active=$1 -Dspring.config.location=classpath:/application.yml,${CONFIG_FILES} -jar ${NINGESTER_JAR} granule=file://${GRANULE} ${@:2} --ningester.pythonChainProcessor.base_url="http://${NINGESTER_PY_SERVER_NAME}/" 2>&1 | sed -e 's/^/[ningester] /'
+JAVA_EXIT_CODE=$?
 
+echo "Exiting with code ${JAVA_EXIT_CODE}"
+exit ${JAVA_EXIT_CODE}

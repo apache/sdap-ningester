@@ -26,6 +26,6 @@ public class NingesterApplication {
     public static void main(String[] args) {
 
         ApplicationContext context = SpringApplication.run(NingesterApplication.class, args);
-        SpringApplication.exit(context);
+        System.exit(SpringApplication.exit(context));
     }
 }
