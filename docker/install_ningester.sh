@@ -18,7 +18,7 @@ set -e
 APACHE_NINGESTER="https://github.com/apache/incubator-sdap-ningester.git"
 MASTER="master"
 
-GIT_REPO=${1:-APACHE_NINGESTER}
+GIT_REPO=${1:-$APACHE_NINGESTER}
 GIT_BRANCH=${2:-$MASTER}
 
 mkdir ningester

@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG  BASE_TAG_VERSION=1.0.0-SNAPSHOT
-FROM sdap/ningester:${BASE_TAG_VERSION}
+ARG  BASE_TAG_VERSION=1.1.2
+FROM nexusjpl/ningester:${BASE_TAG_VERSION}
 
 MAINTAINER dev@sdap.apache.org
 
