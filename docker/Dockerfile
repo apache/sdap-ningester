@@ -40,6 +40,7 @@ RUN wget -q https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.s
     /usr/local/anaconda2/bin/conda config --add channels conda-forge
 ENV PATH /usr/local/anaconda2/bin:$PATH
 
+ARG rebuild_flag=0
 
 # Install nexusproto
 ARG APACHE_NEXUSPROTO=https://github.com/apache/incubator-sdap-nexusproto.git

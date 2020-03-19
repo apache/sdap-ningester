@@ -14,23 +14,39 @@
  * limitations under the License.
 */
 
+buildscript {
+	repositories {
+		mavenLocal()
+		maven { url "https://repo.spring.io/plugins-release" }
+	}
+	dependencies {
+		classpath 'io.spring.gradle:propdeps-plugin:0.0.10.RELEASE'
+	}
+}
+
 plugins {
 	id 'java'
 	id 'idea'
-	id 'propdeps' version '0.0.9.RELEASE'
-	id 'propdeps-maven' version '0.0.9.RELEASE'
-	id 'propdeps-idea' version '0.0.9.RELEASE'
-	id 'propdeps-eclipse' version '0.0.9.RELEASE'
 	id 'org.springframework.boot' version '1.5.9.RELEASE'
 	id 'org.unbroken-dome.test-sets' version '1.4.2'
 	id 'net.researchgate.release' version '2.6.0'
 }
 
+apply plugin: 'propdeps'
+
+configurations.compile.transitive = false
+configurations.provided.transitive = false
+configurations.optional.transitive = false
+
+
 repositories {
 	mavenCentral()
-	maven {
 	mavenLocal()
+	maven {
 		url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
+	}
+	maven {
+		url "https://repo.spring.io/plugins-release/"
 	}
 }
 
@@ -52,12 +68,16 @@ dependencyManagement {
 }
 
 dependencies {
+	provided("org.springframework:spring-core:4.0.2.RELEASE")
+	optional("org.springframework:spring-context:4.0.2.RELEASE")
+
 	optional "org.springframework.boot:spring-boot-configuration-processor"
 
 	compile("org.springframework.boot:spring-boot-starter-batch")
 	compile("org.springframework:spring-web")
 	compile("org.springframework.data:spring-data-cassandra")
 	compile("org.springframework.data:spring-data-solr")
+	compile("org.json:json:20190722")
 
 	compile("com.h2database:h2")
 	compile("mysql:mysql-connector-java")
@@ -65,7 +85,7 @@ dependencies {
 	compile("com.google.protobuf:protobuf-java-util:$protobufUtilVersion")
 
 	compile("edu.ucar:cdm:${netcdfJavaVersion}")
-    compile("com.google.guava:guava")
+	compile("com.google.guava:guava")
 
 	compile("com.amazonaws:aws-java-sdk-s3")
 	compile("com.amazonaws:aws-java-sdk-dynamodb")
